@@ -1,0 +1,33 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# dotenv
+.env*
+
+# JetBrains
+.idea/
+
+# DS Store
+.DS_Store
+
+# Fly will generate Dockerfile and .dockerignore
+Dockerfile
+.dockerignore
+
+# Static files
+bootstrap/
+admin/
+
+# Collected static files
+staticfiles/
+
+# Run uv pip freeze > requirements.txt to generate requirements for Fly Dockerfile
+requirements.txt
