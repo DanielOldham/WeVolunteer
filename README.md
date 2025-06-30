@@ -5,7 +5,7 @@
 Since these directions are mainly for my own reference, they will be MacOS centric.
 `$ROOT` refers to the project root directory.
 
-#### 1. Clone the repo and checkout the `dev` branch
+#### 1. Clone the repo and checkout the `master` branch
 #### 2. Set up python and install dependencies
 The Python versioning and dependencies are managed by [mise-en-place](https://mise.jdx.dev/) and [uv](https://www.google.com/search?client=safari&rls=en&q=uv&ie=UTF-8&oe=UTF-8). It is recommended to install and configure both, but not necessary. It is possible to locate the dependencies from the `uv.lock` and install with `pip`, since there aren't very many.
 <br>When you have mise and uv set up, install Python and the dependencies with
