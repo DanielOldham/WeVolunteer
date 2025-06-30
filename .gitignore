@@ -25,6 +25,7 @@ Dockerfile
 # Static files
 bootstrap/
 admin/
+datastar/
 
 # Collected static files
 staticfiles/

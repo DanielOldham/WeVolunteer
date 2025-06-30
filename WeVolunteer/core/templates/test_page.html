@@ -1,0 +1,33 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WeVolunteer</title>
+
+    {#  Bootstrap 5  #}
+    <link href="{% static "bootstrap/css/bootstrap.css" %}" rel="stylesheet">
+    <link href="{% static "bootstrap/icons/bootstrap-icons.css" %}" rel="stylesheet">
+{#    <link href="{% static "core.css" %}" rel="stylesheet">#}
+
+    {# Datastar #}
+{#    <script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-beta.11/bundles/datastar.js"></script>#}
+</head>
+<body>
+
+<h1 data-signals-test="false" data-on-click="$test=!$test" class="text-primary">
+    WeVolunteer! <i class="bi bi-person-arms-up"></i>
+</h1>
+<div data-show="$test">
+    Datastar!
+</div>
+
+{# Bootstrap 5 #}
+<script src="{% static "bootstrap/js/bootstrap.bundle.js"%}"></script>
+{# Datastar #}
+<script type="module" src="{% static "datastar/datastar-1-0-0-beta-11-451cf4728ff6863d.js" %}"></script>
+</body>
+</html>
