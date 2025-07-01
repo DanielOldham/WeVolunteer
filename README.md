@@ -1,5 +1,7 @@
 # WeVolunteer
 
+---
+
 # Developer Setup
 
 Since these directions are mainly for my own reference, they will be MacOS centric.
@@ -45,7 +47,7 @@ export PATH="/Applications/Postgres.app/Contents/Versions/16/bin:$PATH"
 
 <br>Create the developer db user and instance with
 ```
-createuser --superuser WeVolunteer --pwprompt <password>
+createuser --superuser --pwprompt <password> WeVolunteer 
 createdb --owner WeVolunteer WeVolunteer
 ```
 `cd` into the directory with `manage.py` and run database migrations with
