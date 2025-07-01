@@ -28,9 +28,9 @@ DEBUG = 'True'
 DJANGO_ALLOWED_HOSTS="*"
 DJANGO_CSRF_TRUSTED_ORIGINS='http://localhost:8000'
 
-DATABASE_NAME = 'todo'
-DATABASE_USER = 'todo'
-DATABASE_PASSWORD = '<password>'
+DATABASE_NAME = 'WeVolunteer'
+DATABASE_USER = 'WeVolunteer'
+DATABASE_PASSWORD = 'WeVolunteer'
 DATABASE_HOST = 'localhost'
 DATABASE_PORT = '5432'
 ```
@@ -38,10 +38,15 @@ DATABASE_PORT = '5432'
 #### 4. Install Postgres and configure database
 You can install Postgres by installing the application [here](https://postgresapp.com/).
 <br>Make sure the developer tools are added to your path, they are usually located in `/Applications/Postgres.app/Contents/Versions/16/bin`.
+```
+# ~/.bashrc or ~/.zshrc
+export PATH="/Applications/Postgres.app/Contents/Versions/16/bin:$PATH"
+```
+
 <br>Create the developer db user and instance with
 ```
-createuser --superuser todo --pwprompt <password>
-createdb --owner todo todo
+createuser --superuser WeVolunteer --pwprompt <password>
+createdb --owner WeVolunteer WeVolunteer
 ```
 `cd` into the directory with `manage.py` and run database migrations with
 ```
