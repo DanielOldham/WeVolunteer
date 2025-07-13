@@ -1,0 +1,41 @@
+/* variables */
+:root {
+    --primary-blue: #86E0F0;
+    --primary-blue-dark: #37C4DD;
+
+    --bs-body-font-family: 'Roboto', Arial, sans-serif;
+}
+
+body {
+    background-color: var(--primary-blue);
+}
+
+/* nav styles */
+nav {
+    background-color: var(--primary-blue);
+}
+
+.bg-primary {
+    background-color: var(--primary-blue);
+}
+
+.bottom-shadow {
+    box-shadow: 0 5px 2px -2px rgba(0,0,0,0.15);
+}
+
+.logo-font {
+    font-family: "Balsamiq Sans", 'Roboto Light', serif;
+}
+
+.btn-primary {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: black;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-blue-dark);
+    border-color: var(--primary-blue-dark);
+    color: black;
+}
+

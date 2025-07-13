@@ -1,0 +1,36 @@
+<!doctype html>
+{% load static i18n %}
+<html lang="en" data-bs-theme="auto">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="generator" content="Hugo 0.118.2">
+
+    <title>
+        {% block head_title %}{% endblock %}
+    </title>
+
+    <link rel="icon" type="image/x-icon" href="{% static "images/icons/favicon.png" %}"/>
+
+    {#  Bootstrap 5  #}
+    <link href="{% static "bootstrap/css/bootstrap.css" %}" rel="stylesheet">
+    <link href="{% static "bootstrap/icons/bootstrap-icons.css" %}" rel="stylesheet">
+    <link href="{% static "core.css" %}" rel="stylesheet">
+
+    {# fonts #}
+    <link rel="stylesheet" href="{% static 'fonts/balsamiqsans.css' %}"/>
+</head>
+<body>
+
+{% block outer_body %}
+{% endblock %}
+
+{# Bootstrap 5 #}
+<script src="{% static "bootstrap/js/bootstrap.bundle.js"%}"></script>
+{# Datastar #}
+<script type="module" src="{% static "datastar/datastar-1-0-0-beta-11-451cf4728ff6863d.js" %}"></script>
+</body>
+</html>

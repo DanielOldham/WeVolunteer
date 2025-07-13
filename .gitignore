@@ -26,6 +26,8 @@ Dockerfile
 bootstrap/
 admin/
 datastar/
+fonts/
+account/
 
 # Collected static files
 staticfiles/

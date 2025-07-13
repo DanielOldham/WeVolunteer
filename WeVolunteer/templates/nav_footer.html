@@ -1,0 +1,110 @@
+{% extends "base_head.html" %}
+{% load static %}
+
+{% block outer_body %}
+
+<div class="min-vh-100 d-flex flex-shrink-0 flex-column">
+    <header data-bs-theme="light">
+        <nav class="navbar navbar-expand-lg shadow-sm text fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand text-black logo-font fs-3" href="/">
+                    <img src="{% static "images/icons/logo_dark.png" %}" alt="Logo" width="30" height="30" class="d-inline-block align-items-center" />
+                    WeVolunteer
+                </a>
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbarText"
+                        aria-controls="navbarText"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarText">
+                    <ul role="navigation"
+                        aria-label="Project links"
+                        class="navbar-nav me-auto mb-2 mb-lg-0 fs-5">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-calendar2-event-fill"></i>
+                                Events
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-people-fill"></i>
+                                Organizations
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="d-flex flex-column flex-sm-row gap-2 col-lg-3 justify-content-lg-end text-nowrap">
+                        {% if user.is_authenticated %}
+                            {% url 'account_email' as email_url_ %}
+                            {% url 'socialaccount_connections' as socialaccount_url_ %}
+                            {% if email_url_ or socialaccount_url_ %}
+                                <a href="{% if email_url_ %}{{ email_url_ }}{% else %}{{ socialaccount_url_ }}{% endif %}"
+                                   class="btn btn-secondary">Manage Account</a>
+                            {% endif %}
+                            <a href="{% url 'account_logout' %}" class="btn btn-danger">Sign Out"</a>
+                        {% else %}
+                            <a href="{% url 'account_login' %}" class="btn btn-dark">
+                                <i class="bi bi-door-open"></i>
+                                Sign In
+                            </a>
+                            {% url 'account_signup' as signup_url_ %}
+                            {% if signup_url_ %}
+                                <a href="{{ signup_url_ }}" class="btn btn-dark">
+                                    <i class="bi bi-person-plus"></i>
+                                    Sign Up
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    {% block inner_body %}
+    {% endblock inner_body %}
+</div>
+
+<footer class="bg-dark text-light pt-4 pb-2">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <h5>Company Name</h5>
+                <p>Short description or address goes here.</p>
+            </div>
+            <div class="col-md-2 mb-3">
+                <h6>Products</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-light">Product 1</a></li>
+                    <li><a href="#" class="text-light">Product 2</a></li>
+                </ul>
+            </div>
+            <div class="col-md-2 mb-3">
+                <h6>Useful Links</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-light">Link 1</a></li>
+                    <li><a href="#" class="text-light">Link 2</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h6>Contact</h6>
+                <p>Email: info@example.com</p>
+                <p>Phone: +01 234 567 88</p>
+            </div>
+        </div>
+        <hr class="bg-light">
+        <div class="d-flex justify-content-between align-items-center pb-4">
+            <span>© 2025 Company, Inc. All rights reserved.</span>
+            <div>
+                <a href="#" class="text-light me-3"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-light"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock outer_body %}
