@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'django_google_fonts',
+    'template_partials'
 ]
 
 
@@ -182,3 +183,7 @@ GOOGLE_FONTS = ["Balsamiq Sans"]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+LOGIN_URL = '/account/login'
+LOGIN_REDIRECT_URL = '/'

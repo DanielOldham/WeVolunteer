@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+from core.models import Organization, Event
+
+admin.site.register(Organization)
+admin.site.register(Event)

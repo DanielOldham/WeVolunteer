@@ -5,5 +5,5 @@ from django.conf.urls.static import static
 
 app_name = 'core'
 urlpatterns = [
-    path('', views.test_page, name='test_page'),
+    path('', views.events, name='events'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

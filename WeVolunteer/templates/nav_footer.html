@@ -1,11 +1,9 @@
 {% extends "base_head.html" %}
 {% load static %}
-
-{% block outer_body %}
-
+    {% block outer_body %}
 <div class="min-vh-100 d-flex flex-shrink-0 flex-column">
     <header data-bs-theme="light">
-        <nav class="navbar navbar-expand-lg shadow-sm text fixed-top">
+        <nav class="navbar navbar-expand-lg shadow-sm text">
             <div class="container-fluid">
                 <a class="navbar-brand text-black logo-font fs-3" href="/">
                     <img src="{% static "images/icons/logo_dark.png" %}" alt="Logo" width="30" height="30" class="d-inline-block align-items-center" />
@@ -37,28 +35,44 @@
                             </a>
                         </li>
                     </ul>
-                    <div class="d-flex flex-column flex-sm-row gap-2 col-lg-3 justify-content-lg-end text-nowrap">
+                    <div class="justify-content-lg-end text-nowrap">
+                        <ul role="navigation" aria-label="Account links" class="navbar-nav me-auto mb-2 mb-lg-0 fs-5">
                         {% if user.is_authenticated %}
                             {% url 'account_email' as email_url_ %}
                             {% url 'socialaccount_connections' as socialaccount_url_ %}
                             {% if email_url_ or socialaccount_url_ %}
-                                <a href="{% if email_url_ %}{{ email_url_ }}{% else %}{{ socialaccount_url_ }}{% endif %}"
-                                   class="btn btn-secondary">Manage Account</a>
+                                <li class="nav-item">
+                                    <a href="{% if email_url_ %}{{ email_url_ }}{% else %}{{ socialaccount_url_ }}{% endif %}"
+                                       class="nav-link">
+                                        <i class="bi bi-person-circle"></i>
+                                        Account
+                                    </a>
+                                </li>
                             {% endif %}
-                            <a href="{% url 'account_logout' %}" class="btn btn-danger">Sign Out"</a>
+                            <li class="nav-item">
+                                <a href="{% url 'account_logout' %}" class="nav-link">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    Sign Out
+                                </a>
+                            </li>
                         {% else %}
-                            <a href="{% url 'account_login' %}" class="btn btn-dark">
-                                <i class="bi bi-door-open"></i>
-                                Sign In
-                            </a>
+                            <li class="nav-item">
+                               <a href="{% url 'account_login' %}" class="nav-link">
+                                    <i class="bi bi-door-open-fill"></i>
+                                    Sign In
+                               </a>
+                            </li>
                             {% url 'account_signup' as signup_url_ %}
                             {% if signup_url_ %}
-                                <a href="{{ signup_url_ }}" class="btn btn-dark">
-                                    <i class="bi bi-person-plus"></i>
-                                    Sign Up
-                                </a>
+                                <li class="nav-item">
+                                    <a href="{{ signup_url_ }}" class="nav-link">
+                                        <i class="bi bi-person-plus-fill"></i>
+                                        Sign Up
+                                    </a>
+                                </li>
                             {% endif %}
                         {% endif %}
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -98,11 +112,11 @@
         </div>
         <hr class="bg-light">
         <div class="d-flex justify-content-between align-items-center pb-4">
-            <span>© 2025 Company, Inc. All rights reserved.</span>
+            <span>© 2025 Daniel Oldham</span>
             <div>
-                <a href="#" class="text-light me-3"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="text-light"><i class="fab fa-github"></i></a>
+                <a href="#" class="text-light me-3"><i class="bi bi-facebook"></i></a>
+                <a href="#" class="text-light me-3"><i class="bi bi-twitter"></i></a>
+                <a href="#" class="text-light"><i class="bi bi-github"></i></a>
             </div>
         </div>
     </div>

@@ -1,4 +1,4 @@
-/* variables */
+/* ----------------- Variables ----------------- */
 :root {
     --primary-blue: #86E0F0;
     --primary-blue-dark: #37C4DD;
@@ -6,11 +6,41 @@
     --bs-body-font-family: 'Roboto', Arial, sans-serif;
 }
 
+
+
+/* ----------------- Bootstrap Overrides ----------------- */
+/* button */
+.btn-primary {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: black;
+    box-shadow: var(--bs-box-shadow-sm);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-blue-dark);
+    border-color: var(--primary-blue-dark);
+    color: black;
+}
+
+.btn.btn-primary:active {
+    background-color: var(--primary-blue-dark);
+    border-color: var(--primary-blue-dark);
+    color: black;
+    box-shadow: none;
+}
+
+/* border */
+.border-primary {
+    border-color: var(--primary-blue) !important;
+}
+
+
+/* ----------------- Additional Styling ----------------- */
 body {
     background-color: var(--primary-blue);
 }
 
-/* nav styles */
 nav {
     background-color: var(--primary-blue);
 }
@@ -27,15 +57,10 @@ nav {
     font-family: "Balsamiq Sans", 'Roboto Light', serif;
 }
 
-.btn-primary {
-    background-color: var(--primary-blue);
-    border-color: var(--primary-blue);
-    color: black;
+.text-truncate-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-line-clamp: 3; /* number of lines to show */
+  line-clamp: 3;
 }
-
-.btn-primary:hover {
-    background-color: var(--primary-blue-dark);
-    border-color: var(--primary-blue-dark);
-    color: black;
-}
-
