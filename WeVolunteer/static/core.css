@@ -3,6 +3,12 @@
     --primary-blue: #86E0F0;
     --primary-blue-dark: #37C4DD;
 
+    --wv-yellow: #F3DD61;
+    --wv-yellow-dark: #E6C925;
+
+    --wv-purple: #D9BAFF;
+    --wv-purple-dark: #BC92F0;
+
     --bs-body-font-family: 'Roboto', Arial, sans-serif;
 }
 
@@ -35,7 +41,6 @@
     border-color: var(--primary-blue) !important;
 }
 
-
 /* ----------------- Additional Styling ----------------- */
 body {
     background-color: var(--primary-blue);
@@ -63,4 +68,18 @@ nav {
   overflow: hidden;
   -webkit-line-clamp: 3; /* number of lines to show */
   line-clamp: 3;
+}
+
+/* color */
+.text-bg-wv-yellow {
+    background-color: var(--wv-yellow);
+    color: black;
+}
+
+.text-wv-purple {
+    color: var(--wv-purple);
+}
+
+.text-primary-blue-dark {
+    color: var(--primary-blue-dark);
 }

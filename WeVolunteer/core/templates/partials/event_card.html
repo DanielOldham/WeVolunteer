@@ -1,11 +1,22 @@
-{% load partials %}
+{% load partials event_tags %}
 {% partialdef event-card %}
 <div class="card h-100 m-4 border-primary border-2 shadow-sm">
     <div class="card-body">
         {# title #}
-        <h4 class="card-title">
-            {{ event.title }}
-        </h4>
+        <h5 class="card-title">
+            <a href="#" class="link-dark link-offset-1">
+                {{ event.title }}
+            </a>
+        </h5>
+
+        {# tags #}
+        {% if event.event_descriptor_tags %}
+            <div class="pt-1 pb-2">
+            {% for tag in event.event_descriptor_tags %}
+                <span class="badge rounded-pill text-bg-wv-yellow fs-6 fw-light py-2 px-3 my-1 me-1">{{ tag|event_descriptor_label }}</span>
+            {% endfor %}
+            </div>
+        {% endif %}
 
         {# date #}
         <div class="card-text py-1">
@@ -19,7 +30,7 @@
 
         {# address #}
         <div class="card-text py-1 text-truncate">
-            <span class="pe-2"><i class="bi bi-geo-alt"></i></span>{{ event.address }}
+            <span class="pe-2"><i class="bi bi-geo-alt"></i></span>{% if event.address %}{{ event.address }}{% else %}<span class="fst-italic">Location not given</span>{% endif %}
         </div>
 
         <hr class="">
@@ -45,9 +56,13 @@
 
         <hr class="">
 
-        {# details #}
+        {# description #}
         <div class="card-text py-1 text-truncate-3">
-            {{ event.description }}
+            {% if event.description %}
+                {{ event.description }}
+            {% else %}
+                <span class="fst-italic">No details</span>
+            {% endif %}
         </div>
     </div>
 </div>
