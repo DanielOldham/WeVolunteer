@@ -9,6 +9,9 @@
     --wv-purple: #D9BAFF;
     --wv-purple-dark: #BC92F0;
 
+    --wv-pink: #FFB8D2;
+    --wv-pink-dark: #FF88B4;
+
     --bs-body-font-family: 'Roboto', Arial, sans-serif;
 }
 
@@ -59,7 +62,7 @@ nav {
 }
 
 .logo-font {
-    font-family: "Balsamiq Sans", 'Roboto Light', serif;
+    font-family: 'Nunito', 'Roboto Light', serif;
 }
 
 .text-truncate-3 {
@@ -71,13 +74,16 @@ nav {
 }
 
 /* color */
-.text-bg-wv-yellow {
+.bg-wv-yellow {
     background-color: var(--wv-yellow);
-    color: black;
 }
 
 .text-wv-purple {
     color: var(--wv-purple);
+}
+
+.bg-wv-pink {
+    background-color: var(--wv-pink);
 }
 
 .text-primary-blue-dark {

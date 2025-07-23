@@ -1,3 +1,4 @@
+import datetime
 from random import choices
 
 from django.contrib.postgres.fields import ArrayField
@@ -31,6 +32,60 @@ class EventDescriptorTags(TextChoices):
     PAINTING = "PAINTING", "Painting"
     OTHER = "OTHER", "Other"
 
+class TimeOfDay(TextChoices):
+    """
+    Enumeration of different time block descriptions.
+
+
+    """
+
+    EARLY_MORNING = "EARLY_MORNING", "Early Morning"
+    MORNING = "MORNING", "Morning"
+    MID_MORNING = "MID_MORNING", "Mid-Morning"
+    MIDDAY = "MIDDAY", "Midday"
+    AFTERNOON = "AFTERNOON", "Afternoon"
+    EVENING = "EVENING", "Evening"
+    NIGHT = "NIGHT", "Night"
+
+# TimeOfDay ranges
+# 12AM-06AM : Early Morning
+# 06AM-10AM : Morning
+# 10AM-12AM : Mid-Morning
+# 12PM-02PM : Midday
+# 02PM-06PM : Afternoon
+# 06PM-08PM : Evening
+# 08PM-12AM : Night
+time_of_day_ranges = {
+    TimeOfDay.EARLY_MORNING: (datetime.time(0, 0, 0), datetime.time(5, 59, 59)),
+    TimeOfDay.MORNING: (datetime.time(6, 0,0), datetime.time(9, 59, 59)),
+    TimeOfDay.MID_MORNING: (datetime.time(10, 0,0), datetime.time(11, 59, 59)),
+    TimeOfDay.MIDDAY: (datetime.time(12, 0, 0), datetime.time(13, 59, 59)),
+    TimeOfDay.AFTERNOON: (datetime.time(14, 0, 0), datetime.time(17, 59, 59)),
+    TimeOfDay.EVENING: (datetime.time(18, 0, 0), datetime.time(19, 59, 59)),
+    TimeOfDay.NIGHT: (datetime.time(20, 0, 0), datetime.time(23, 59, 59)),
+}
+
+def ranges_overlap(range_1_start, range_1_end, range_2_start, range_2_end):
+    return range_1_start <= range_2_end and range_1_end >= range_2_start
+
+def point_in_range(point, range_start, range_end):
+    return range_start <= point <= range_end
+
+def get_time_of_day(time_1 : datetime.time, time_2 : datetime.time=None):
+    if not time_1 and not time_2:
+        return []
+    if not time_1 or not time_2: # if either null/empty
+        time = time_1 if time_1 else time_2
+        for key, value in time_of_day_ranges.items():
+            if point_in_range(time, value[0], value[1]):
+                return [key]
+    else:
+        enum_list = []
+        for key, value in time_of_day_ranges.items():
+            if ranges_overlap(time_1, time_2, value[0], value[1]):
+                enum_list.append(key)
+
+        return enum_list
 
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
     def populate_user(self, request, sociallogin, data):
@@ -90,4 +145,7 @@ class Event(models.Model):
 
     def __str__(self):
         return self.title + ' - ' + self.organization.__str__() + ' - ' + self.date.strftime('%m/%d/%Y')
+
+    def time_of_day(self):
+        return get_time_of_day(self.start_time, self.end_time)
 

@@ -1,12 +1,6 @@
 {% extends 'nav_footer.html' %}
 {% block inner_body %}
-    <div class="flex-grow-1 bg-body-secondary">
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            {% for event in events %}
-                <div class="col">
-                    {% include "partials/event_card.html#event-card" %}
-                </div>
-            {% endfor %}
-        </div>
-    </div>
+<div class="flex-grow-1 bg-body-secondary">
+    {% include 'partials/monthly_event_list.html#monthly-event-list' %}
+</div>
 {% endblock inner_body %}

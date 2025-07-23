@@ -1,0 +1,26 @@
+{% load partials enum_tags %}
+{% partialdef monthly-event-list %}
+    {% for month_year, event_list in monthly_events.items %}
+        <div class="mx-4 mt-4">
+            <div class="row">
+                <h4>
+                    {{ month_year }}
+                    <hr class="">
+                </h4>
+            </div>
+            {% if event_list %}
+                <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4">
+                    {% for event in event_list %}
+                        <div class="col mb-4">
+                            {% include "partials/event_card.html#event-card" %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="row">
+                    <h6 class="fst-italic">No events for this month</h6>
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endpartialdef %}
