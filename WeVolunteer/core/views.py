@@ -7,7 +7,7 @@ from core.models import Event
 
 
 def get_events_by_month_and_year(month_year: datetime):
-    return Event.objects.filter(date__month=month_year.month, date__year=month_year.year).order_by('date')
+    return Event.objects.filter(date__month=month_year.month, date__year=month_year.year).order_by('date', 'start_time')
 
 
 def events(request):
@@ -21,13 +21,12 @@ def events(request):
 
     num_months = 3
     for i in range(num_months):
-        month = current_month + i
-        year = current_year
-        if month > 12:
-            month = 1
-            year += 1
+        current_month += 1 ####################
+        if current_month > 12:
+            current_month = 1
+            current_year += 1
 
-        events_date = datetime(year=year, month=month, day=1)
+        events_date = datetime(year=current_year, month=current_month, day=1)
         queryset = get_events_by_month_and_year(events_date)
         if i == 0:
             queryset = queryset.filter(date__gte=now)
@@ -36,6 +35,7 @@ def events(request):
 
     context = {
         'monthly_events': monthly_events,
+
     }
 
     return render(request, 'events.html', context)

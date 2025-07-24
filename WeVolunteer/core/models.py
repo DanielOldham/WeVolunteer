@@ -7,11 +7,10 @@ from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.db.models import TextChoices
 
 
-class EventDescriptorTags(TextChoices):
+class EventDescriptors(TextChoices):
     """
-    Enumeration of the different descriptive tags for an event.
+    Enumeration for the different descriptive tags for an event.
     """
-
     MOVING = "MOVING", "Moving"
     YARD_WORK = "YARD_WORK", "Yard Work"
     CLEANING = "CLEANING", "Cleaning"
@@ -32,11 +31,16 @@ class EventDescriptorTags(TextChoices):
     PAINTING = "PAINTING", "Painting"
     OTHER = "OTHER", "Other"
 
+
+class EventLocationDescriptors(TextChoices):
+    INDOOR = "INDOOR", "Indoor"
+    OUTDOOR = "OUTDOOR", "Outdoor"
+    VIRTUAL = "VIRTUAL", "Virtual"
+
+
 class TimeOfDay(TextChoices):
     """
-    Enumeration of different time block descriptions.
-
-
+    Enumeration for different time block descriptions.
     """
 
     EARLY_MORNING = "EARLY_MORNING", "Early Morning"
@@ -46,6 +50,7 @@ class TimeOfDay(TextChoices):
     AFTERNOON = "AFTERNOON", "Afternoon"
     EVENING = "EVENING", "Evening"
     NIGHT = "NIGHT", "Night"
+
 
 # TimeOfDay ranges
 # 12AM-06AM : Early Morning
@@ -65,13 +70,44 @@ time_of_day_ranges = {
     TimeOfDay.NIGHT: (datetime.time(20, 0, 0), datetime.time(23, 59, 59)),
 }
 
+
 def ranges_overlap(range_1_start, range_1_end, range_2_start, range_2_end):
+    """
+    Check if two ranges overlap.
+
+    :param range_1_start: start of the first range
+    :param range_1_end: end of the first range
+    :param range_2_start: start of the second range
+    :param range_2_end: end of the second range
+    :return: True if the ranges overlap, False otherwise
+    """
+
     return range_1_start <= range_2_end and range_1_end >= range_2_start
 
+
 def point_in_range(point, range_start, range_end):
+    """
+    Check if a point is within a range.
+
+    :param point: point to check
+    :param range_start: start of the range
+    :param range_end: end of the range
+    :return: True if the point is within range, False otherwise
+    """
+
     return range_start <= point <= range_end
 
-def get_time_of_day(time_1 : datetime.time, time_2 : datetime.time=None):
+
+def get_time_of_day_enum_list(time_1 : datetime.time, time_2 : datetime.time=None) -> list[TimeOfDay]:
+    """
+    Get a list of TimeOfDay Enum objects that the range of given datetime.time objects overlap with.
+    If only passing one time object, return a single item list containing the TimeOfDay range it falls in.
+
+    :param time_1: start of the range
+    :param time_2: end of the range
+    :return: list of TimeOfDay Enum objects
+    """
+
     if not time_1 and not time_2:
         return []
     if not time_1 or not time_2: # if either null/empty
@@ -86,6 +122,7 @@ def get_time_of_day(time_1 : datetime.time, time_2 : datetime.time=None):
                 enum_list.append(key)
 
         return enum_list
+
 
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
     def populate_user(self, request, sociallogin, data):
@@ -135,9 +172,13 @@ class Event(models.Model):
     end_time = models.TimeField(verbose_name='end time', null=True, blank=True)
     # TODO: add Location model foreign key with location name, address, and address notes - can do active search for locations when choosing, or maybe just google maps api integration
     address = models.TextField(max_length=255, null=True, blank=True)
-    # TODO: add indoor/outdoor/virtual tag field
     event_descriptor_tags = MultipleChoiceArrayField(
-        models.CharField(max_length=50, choices=EventDescriptorTags),
+        models.CharField(max_length=50, choices=EventDescriptors),
+        default=list,
+        blank=True,
+    )
+    location_descriptor_tags = MultipleChoiceArrayField(
+        models.CharField(max_length=20, choices=EventLocationDescriptors),
         default=list,
         blank=True,
     )
@@ -147,5 +188,5 @@ class Event(models.Model):
         return self.title + ' - ' + self.organization.__str__() + ' - ' + self.date.strftime('%m/%d/%Y')
 
     def time_of_day(self):
-        return get_time_of_day(self.start_time, self.end_time)
+        return get_time_of_day_enum_list(self.start_time, self.end_time)
 

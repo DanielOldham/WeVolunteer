@@ -12,6 +12,9 @@
     --wv-pink: #FFB8D2;
     --wv-pink-dark: #FF88B4;
 
+    --wv-green: #91F38C;
+    --wv-green-dark: #55D743;
+
     --bs-body-font-family: 'Roboto', Arial, sans-serif;
 }
 
@@ -78,8 +81,8 @@ nav {
     background-color: var(--wv-yellow);
 }
 
-.text-wv-purple {
-    color: var(--wv-purple);
+.bg-wv-green {
+    background-color: var(--wv-green);
 }
 
 .bg-wv-pink {
@@ -88,4 +91,8 @@ nav {
 
 .text-primary-blue-dark {
     color: var(--primary-blue-dark);
+}
+
+.text-wv-purple {
+    color: var(--wv-purple);
 }
