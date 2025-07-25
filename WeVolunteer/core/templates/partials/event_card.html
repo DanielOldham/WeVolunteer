@@ -1,0 +1,77 @@
+{% load partials enum_tags google_fonts %}
+{% partialdef event-card %}
+<div class="card h-100 mb-4 border-primary border-2 shadow-sm">
+    <div class="card-body">
+        {# title #}
+        <h5 class="card-title logo-font fw-semibold">
+            <a href="#" class="link-dark link-offset-1">
+                {{ event.title }}
+            </a>
+        </h5>
+
+        {# tags #}
+        <div class="pt-1 pb-2">
+            {% if event.event_descriptor_tags %}
+                {% for tag in event.event_descriptor_tags %}
+                    <span class="badge rounded-pill bg-wv-yellow text-black fs-6 fw-light py-2 px-3 my-1 me-1">{{ tag|event_descriptor_label }}</span>
+                {% endfor %}
+            {% endif %}
+            {% for tag in event.time_of_day %}
+                <span class="badge rounded-pill bg-wv-pink text-black fs-6 fw-light py-2 px-3 my-1 me-1">{{ tag|time_of_day_label }}</span>
+            {% endfor %}
+            {% if event.location_descriptor_tags %}
+                {% for tag in event.location_descriptor_tags %}
+                    <span class="badge rounded-pill bg-wv-green text-black fs-6 fw-light py-2 px-3 my-1 me-1">{{ tag|event_location_descriptor_label }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        {# date #}
+        <div class="card-text py-1">
+            <span class="pe-2"><i class="bi bi-calendar-event"></i></span>{{ event.date|date:"D M d, Y" }}
+        </div>
+
+        {# time #}
+        <div class="card-text py-1">
+            <span class="pe-2"><i class="bi bi-clock"></i></span>{{ event.start_time|time:"g:i A" }}{% if event.end_time %} - {{ event.end_time|time:"g:i A" }}{% endif %}
+        </div>
+
+        {# address #}
+        <div class="card-text py-1 text-truncate">
+            <span class="pe-2"><i class="bi bi-geo-alt"></i></span>{% if event.address %}{{ event.address }}{% else %}<span class="fst-italic">Location not given</span>{% endif %}
+        </div>
+
+        <hr class="">
+
+        {# org name #}
+        <div class="card-text py-1 text-truncate fst-italic">
+            <span class="pe-2"><i class="bi bi-people"></i></span>{{ event.organization.name }}
+        </div>
+
+        {# org email #}
+        {% if event.organization.contact_email %}
+        <div class="card-text py-1">
+            <span class="pe-2"><i class="bi bi-envelope"></i></span>{{ event.organization.contact_email }}
+        </div>
+        {% endif %}
+
+        {# org phone #}
+        {% if event.organization.contact_phone %}
+        <div class="card-text py-1">
+            <span class="pe-2"><i class="bi bi-telephone"></i></span>{{ event.organization.contact_phone }}
+        </div>
+        {% endif %}
+
+        <hr class="">
+
+        {# description #}
+        <div class="card-text py-1 text-truncate-3">
+            {% if event.description %}
+                {{ event.description }}
+            {% else %}
+                <span class="fst-italic">No details</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endpartialdef %}

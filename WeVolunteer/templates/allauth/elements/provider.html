@@ -1,0 +1,13 @@
+{% load allauth %}
+<li class="list-group-item">
+    <a class="d-block w-100 link-dark link-underline link-underline-opacity-0"
+       title="{{ attrs.name }}"
+       href="{{ attrs.href }}">
+        <span class="pe-1">
+            {% if attrs.name == "Google" %}
+                <i class="bi bi-google"></i>
+            {% endif %}
+        </span>
+        {{ attrs.name }}
+    </a>
+</li>

@@ -1,0 +1,30 @@
+{% extends 'nav_footer.html' %}
+{% block inner_body %}
+<div class="flex-grow-1 bg-body-secondary">
+    <div class="mx-4 mt-5">
+        <div class="row">
+            <h2 class="logo-font fw-semibold text-center">Upcoming Events</h2>
+        </div>
+    </div>
+
+    {% include 'partials/monthly_event_list.html#monthly-event-list' %}
+
+    <div id="appended-monthly-event-list"
+         data-signals-current_month="{{ current_month }}"
+         data-signals-current_year="{{ current_year }}"></div>
+
+    <div id="load-button-div" class="row mx-4 my-5">
+        <span class="text-center">
+            <button data-on-click="@get('{% url "core:get-monthly-events" %}')"
+{#                    data-indicator-fetching_events#}
+{#                    data-attr-disabled="$fetching_events"#}
+                    class="btn btn-primary fw-semibold">
+
+{#                <span data-show="!$fetching_events">Load More</span>#}
+{#                <span data-show="$fetching_events">Loading....</span>#}
+                Load More
+            </button>
+        </span>
+    </div>
+</div>
+{% endblock inner_body %}

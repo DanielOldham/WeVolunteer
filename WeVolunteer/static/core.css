@@ -1,0 +1,98 @@
+/* ----------------- Variables ----------------- */
+:root {
+    --primary-blue: #86E0F0;
+    --primary-blue-dark: #37C4DD;
+
+    --wv-yellow: #F3DD61;
+    --wv-yellow-dark: #E6C925;
+
+    --wv-purple: #D9BAFF;
+    --wv-purple-dark: #BC92F0;
+
+    --wv-pink: #FFB8D2;
+    --wv-pink-dark: #FF88B4;
+
+    --wv-green: #91F38C;
+    --wv-green-dark: #55D743;
+
+    --bs-body-font-family: 'Roboto', Arial, sans-serif;
+}
+
+
+
+/* ----------------- Bootstrap Overrides ----------------- */
+/* button */
+.btn-primary {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: black;
+    box-shadow: var(--bs-box-shadow-sm);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-blue-dark);
+    border-color: var(--primary-blue-dark);
+    color: black;
+}
+
+.btn.btn-primary:active {
+    background-color: var(--primary-blue-dark);
+    border-color: var(--primary-blue-dark);
+    color: black;
+    box-shadow: none;
+}
+
+/* border */
+.border-primary {
+    border-color: var(--primary-blue) !important;
+}
+
+/* ----------------- Additional Styling ----------------- */
+body {
+    background-color: var(--primary-blue);
+}
+
+nav {
+    background-color: var(--primary-blue);
+}
+
+.bg-primary {
+    background-color: var(--primary-blue);
+}
+
+.bottom-shadow {
+    box-shadow: 0 5px 2px -2px rgba(0,0,0,0.15);
+}
+
+.logo-font {
+    font-family: 'Nunito', 'Roboto Light', serif;
+}
+
+.text-truncate-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-line-clamp: 3; /* number of lines to show */
+  line-clamp: 3;
+}
+
+/* color */
+.bg-wv-yellow {
+    background-color: var(--wv-yellow);
+}
+
+.bg-wv-green {
+    background-color: var(--wv-green);
+}
+
+.bg-wv-pink {
+    background-color: var(--wv-pink);
+}
+
+.text-primary-blue-dark {
+    color: var(--primary-blue-dark);
+}
+
+.text-wv-purple {
+    color: var(--wv-purple);
+}
