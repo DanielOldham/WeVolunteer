@@ -9,12 +9,19 @@
 
     {% include 'partials/monthly_event_list.html#monthly-event-list' %}
 
-    <div data-signals-current_month="{{ current_month }}"
+    <div id="appended-monthly-event-list"
+         data-signals-current_month="{{ current_month }}"
          data-signals-current_year="{{ current_year }}"></div>
 
-    <div class="row mx-4 my-5">
+    <div id="load-button-div" class="row mx-4 my-5">
         <span class="text-center">
-            <button class="btn btn-primary fw-semibold">
+            <button data-on-click="@get('{% url "core:get-monthly-events" %}')"
+{#                    data-indicator-fetching_events#}
+{#                    data-attr-disabled="$fetching_events"#}
+                    class="btn btn-primary fw-semibold">
+
+{#                <span data-show="!$fetching_events">Load More</span>#}
+{#                <span data-show="$fetching_events">Loading....</span>#}
                 Load More
             </button>
         </span>
