@@ -13,17 +13,20 @@
          data-signals-current_month="{{ current_month }}"
          data-signals-current_year="{{ current_year }}"></div>
 
-    <div id="load-button-div" class="row mx-4 my-5">
-        <span class="text-center">
-            <button data-on-click="@get('{% url "core:get-monthly-events" %}')"
-{#                    data-indicator-fetching_events#}
-{#                    data-attr-disabled="$fetching_events"#}
+    <div data-signals-more_events="true" id="load-more-events-div" class="row mx-4 my-5">
+        <span data-show="$more_events" class="text-center">
+            <button data-on-click="@get('{% url "core:get-next-month-events" %}')"
+                    data-indicator-_fetching_events
+                    data-attr-disabled="$_fetching_events"
                     class="btn btn-primary fw-semibold">
 
-{#                <span data-show="!$fetching_events">Load More</span>#}
-{#                <span data-show="$fetching_events">Loading....</span>#}
-                Load More
+                <span data-show="!$_fetching_events">Load More</span>
+                <span data-show="$_fetching_events">Loading....</span>
             </button>
+        </span>
+
+        <span data-show="!$more_events" class="text-center fst-italic">
+            There are no more upcoming events!
         </span>
     </div>
 </div>

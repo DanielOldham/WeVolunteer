@@ -157,11 +157,11 @@ wheels = [
 
 [[package]]
 name = "datastar-py"
-version = "0.5.0"
+version = "0.6.3"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/e2/37/827dd25f03589b1833a5ba3762f4164eb7dda710756710d13d2e9af1e81c/datastar_py-0.5.0.tar.gz", hash = "sha256:59c01f5bc39b3d2434824d752b48bdf4414fb0a38804151b88e868f43348728e", size = 72916 }
+sdist = { url = "https://files.pythonhosted.org/packages/bf/8d/3b5f8c703dc8456141c4d2841192e630ed7557dcd13de4adc3c7f3325d88/datastar_py-0.6.3.tar.gz", hash = "sha256:a8818d325081d8b362149a0c341952aaa97b68da30df28936f4e690962870529", size = 145895 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fa/ea/90ba56b06fa462fe891574581eab8ced32227759d98d90d99efbb7c1f1ee/datastar_py-0.5.0-py3-none-any.whl", hash = "sha256:1b133c49c977c878e828bfb99c69fcab8996a127d4621ccc67fb5460fcd704d4", size = 16381 },
+    { url = "https://files.pythonhosted.org/packages/5d/b6/efd73a95bd8103b9a1ace31eb93a3ee6be960a4389d7300ab0c429147508/datastar_py-0.6.3-py3-none-any.whl", hash = "sha256:6c42ced5229fe7e9fb54fd405e8fbd5174a9c99294d96e60dccd377829ea30a3", size = 18620 },
 ]
 
 [[package]]

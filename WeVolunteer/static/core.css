@@ -42,6 +42,13 @@
     box-shadow: none;
 }
 
+.btn.btn-primary:disabled {
+    background-color: darkgray;
+    border-color: darkgray;
+    color: black;
+    opacity: 1;
+}
+
 /* border */
 .border-primary {
     border-color: var(--primary-blue) !important;
