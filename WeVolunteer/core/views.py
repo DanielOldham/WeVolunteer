@@ -19,9 +19,19 @@ def get_events_by_month_and_year(month_year: datetime.date):
     return Event.objects.filter(date__month=month_year.month, date__year=month_year.year).order_by('date', 'start_time')
 
 
+def about(request):
+    """
+    Django view.
+    Render the about page.
+    """
+
+    return render(request, "about.html")
+
+
 def events(request):
     """
-    Render the events page
+    Django view.
+    Render the events page.
     """
 
     monthly_events = {}

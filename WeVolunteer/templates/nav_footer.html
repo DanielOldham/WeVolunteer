@@ -1,87 +1,93 @@
 {% extends "base_head.html" %}
 {% load static %}
     {% block outer_body %}
-<div class="min-vh-100 d-flex flex-shrink-0 flex-column">
-    <header data-bs-theme="light">
-        <nav class="navbar navbar-expand-lg shadow-sm text">
-            <div class="container-fluid">
-                <a class="navbar-brand text-black logo-font fw-semibold fs-3" href="/">
-                    <img src="{% static "images/icons/logo_dark.png" %}" alt="Logo" width="30" height="30" class="d-inline-block align-items-center" />
-                    WeVolunteer
-                </a>
-                <button class="navbar-toggler"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#navbarText"
-                        aria-controls="navbarText"
-                        aria-expanded="false"
-                        aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarText">
-                    <ul role="navigation"
-                        aria-label="Project links"
-                        class="navbar-nav me-auto mb-2 mb-lg-0 fs-5">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'core:events' %}">
-                                <i class="bi bi-calendar2-event-fill"></i>
-                                Events
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-people-fill"></i>
-                                Organizations
-                            </a>
-                        </li>
-                    </ul>
-                    <div class="justify-content-lg-end text-nowrap">
-                        <ul role="navigation" aria-label="Account links" class="navbar-nav me-auto mb-2 mb-lg-0 fs-5">
-                        {% if user.is_authenticated %}
-                            {% url 'account_email' as email_url_ %}
-                            {% url 'socialaccount_connections' as socialaccount_url_ %}
-                            {% if email_url_ or socialaccount_url_ %}
+        <div class="min-vh-100 d-flex flex-shrink-0 flex-column">
+            <header data-bs-theme="light">
+                <nav class="navbar navbar-expand-lg shadow-sm text">
+                    <div class="container-fluid">
+                        <a class="navbar-brand text-black logo-font fw-semibold fs-3" href="/">
+                            <img src="{% static "images/icons/logo_dark.png" %}" alt="Logo" width="30" height="30" class="d-inline-block align-items-center" />
+                            WeVolunteer
+                        </a>
+                        <button class="navbar-toggler"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#navbarText"
+                                aria-controls="navbarText"
+                                aria-expanded="false"
+                                aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarText">
+                            <ul role="navigation"
+                                aria-label="Project links"
+                                class="navbar-nav me-auto mb-2 mb-lg-0 fs-5">
                                 <li class="nav-item">
-                                    <a href="{% if email_url_ %}{{ email_url_ }}{% else %}{{ socialaccount_url_ }}{% endif %}"
-                                       class="nav-link">
-                                        <i class="bi bi-person-circle"></i>
-                                        Account
+                                    <a class="nav-link" href="{% url 'core:events' %}">
+                                        <i class="bi bi-calendar2-event-fill"></i>
+                                        Events
                                     </a>
                                 </li>
-                            {% endif %}
-                            <li class="nav-item">
-                                <a href="{% url 'account_logout' %}" class="nav-link">
-                                    <i class="bi bi-box-arrow-right"></i>
-                                    Sign Out
-                                </a>
-                            </li>
-                        {% else %}
-                            <li class="nav-item">
-                               <a href="{% url 'account_login' %}" class="nav-link">
-                                    <i class="bi bi-door-open-fill"></i>
-                                    Sign In
-                               </a>
-                            </li>
-                            {% url 'account_signup' as signup_url_ %}
-                            {% if signup_url_ %}
+{#                                <li class="nav-item">#}
+{#                                    <a class="nav-link" href="#">#}
+{#                                        <i class="bi bi-people-fill"></i>#}
+{#                                        Organizations#}
+{#                                    </a>#}
+{#                                </li>#}
                                 <li class="nav-item">
-                                    <a href="{{ signup_url_ }}" class="nav-link">
-                                        <i class="bi bi-person-plus-fill"></i>
-                                        Sign Up
+                                    <a class="nav-link" href="{% url 'core:about' %}">
+                                        <i class="bi bi-info-circle-fill"></i>
+                                        About
                                     </a>
                                 </li>
-                            {% endif %}
-                        {% endif %}
-                        </ul>
+                            </ul>
+                            <div class="justify-content-lg-end text-nowrap">
+                                <ul role="navigation" aria-label="Account links" class="navbar-nav me-auto mb-2 mb-lg-0 fs-5">
+                                {% if user.is_authenticated %}
+                                    {% url 'account_email' as email_url_ %}
+                                    {% url 'socialaccount_connections' as socialaccount_url_ %}
+                                    {% if email_url_ or socialaccount_url_ %}
+                                        <li class="nav-item">
+                                            <a href="{% if email_url_ %}{{ email_url_ }}{% else %}{{ socialaccount_url_ }}{% endif %}"
+                                               class="nav-link">
+                                                <i class="bi bi-person-circle"></i>
+                                                Account
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    <li class="nav-item">
+                                        <a href="{% url 'account_logout' %}" class="nav-link">
+                                            <i class="bi bi-box-arrow-right"></i>
+                                            Sign Out
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="nav-item">
+                                       <a href="{% url 'account_login' %}" class="nav-link">
+                                            <i class="bi bi-door-open-fill"></i>
+                                            Sign In
+                                       </a>
+                                    </li>
+                                    {% url 'account_signup' as signup_url_ %}
+                                    {% if signup_url_ %}
+                                        <li class="nav-item">
+                                            <a href="{{ signup_url_ }}" class="nav-link">
+                                                <i class="bi bi-person-plus-fill"></i>
+                                                Sign Up
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                {% endif %}
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </nav>
-    </header>
+                </nav>
+            </header>
 
-    {% block inner_body %}
-    {% endblock inner_body %}
-</div>
+        {% block inner_body %}
+        {% endblock inner_body %}
+    </div>
 
 <footer class="bg-dark text-light pt-4 pb-2">
     <div class="container">
@@ -92,7 +98,7 @@
                     WeVolunteer
                 </h5>
                 <p>Ogden, Utah, USA</p>
-                <p class="fst-italic">Originally created for academic purposes under Weber State University.</p>
+                <p class="fst-italic">Originally created for academic purposes by Weber State University students and alumni.</p>
             </div>
             <div class="col-md-4 mb-3 text-md-center">
                 <h6 class="fw-bold">Links</h6>

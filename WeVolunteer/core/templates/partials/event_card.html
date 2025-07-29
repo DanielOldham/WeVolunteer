@@ -37,9 +37,11 @@
         </div>
 
         {# address #}
-        <div class="card-text py-1 text-truncate">
-            <span class="pe-2"><i class="bi bi-geo-alt"></i></span>{% if event.address %}{{ event.address }}{% else %}<span class="fst-italic">Location not given</span>{% endif %}
-        </div>
+        {% if request.user.is_authenticated %}
+            <div class="card-text py-1 text-truncate">
+                <span class="pe-2"><i class="bi bi-geo-alt"></i></span>{% if event.address %}{{ event.address }}{% else %}<span class="fst-italic">Location not given</span>{% endif %}
+            </div>
+        {% endif %}
 
         <hr class="">
 
@@ -48,18 +50,20 @@
             <span class="pe-2"><i class="bi bi-people"></i></span>{{ event.organization.name }}
         </div>
 
-        {# org email #}
-        {% if event.organization.contact_email %}
-        <div class="card-text py-1">
-            <span class="pe-2"><i class="bi bi-envelope"></i></span>{{ event.organization.contact_email }}
-        </div>
-        {% endif %}
+        {% if request.user.is_authenticated %}
+            {# org email #}
+            {% if event.organization.contact_email %}
+            <div class="card-text py-1">
+                <span class="pe-2"><i class="bi bi-envelope"></i></span>{{ event.organization.contact_email }}
+            </div>
+            {% endif %}
 
-        {# org phone #}
-        {% if event.organization.contact_phone %}
-        <div class="card-text py-1">
-            <span class="pe-2"><i class="bi bi-telephone"></i></span>{{ event.organization.contact_phone }}
-        </div>
+            {# org phone #}
+            {% if event.organization.contact_phone %}
+            <div class="card-text py-1">
+                <span class="pe-2"><i class="bi bi-telephone"></i></span>{{ event.organization.contact_phone }}
+            </div>
+            {% endif %}
         {% endif %}
 
         <hr class="">
