@@ -1,0 +1,48 @@
+{% extends 'nav_footer.html' %}
+{% block inner_body %}
+<div class="flex-grow-1 bg-body-secondary d-flex flex-column justify-content-center">
+    <div class="flex-grow-0 flex-shrink-0 container">
+        <div class="row justify-content-md-center">
+            <div class="col col-lg-8">
+                <div class="card rounded-4 shadow-sm">
+                    <div class="card-body mx-5 my-3">
+                        <h2 class="card-title text-center fw-semibold logo-font pb-3">About WeVolunteer</h2>
+
+                        <hr>
+
+                        <div class="fs-5 lh-lg">
+                            <p class="card-text mb-4">
+                                <span class="logo-font fw-bold fs-4">WeVolunteer</span> was created by Weber State students and alumni with one goal: to make volunteering easier, more accessible, and more impactful in our local community.
+                            </p>
+                            <p class="card-text mb-4">
+                                <span class="logo-font fw-bold fs-4">Based in Ogden, Utah,</span> our mission is to bridge the gap between organizations that need help and individuals who want to give back.
+                            </p>
+                            <p class="card-text mb-4">
+                                <span class="logo-font fw-bold fs-4">Whether you’re a student</span> looking for service hours, a club searching for group opportunities, or a nonprofit needing reliable support, WeVolunteer simplifies the process. Our platform allows volunteers to view upcoming events, see all the essential details, and directly connect to the event coordinator.
+                            </p>
+                            <p class="card-text">
+                                <span class="logo-font fw-bold fs-4">By connecting people with purpose,</span> we’re building a stronger, more connected community one event at a time.
+                            </p>
+                        </div>
+
+                        <hr>
+
+                        <div class="fs-5 lh-lg">
+                            <p class="card-text">
+                                <span class="logo-font fw-bold fs-4">How it works</span>
+                            </p>
+                            <p class="card-text lh-lg">
+                                Anyone may browse the list of available events! If you want to volunteer at an event, make an account and sign in. Volunteers who are signed in can view event locations as well as the contact info for the coordinating organization. An RSVP feature is in progress.
+                            </p>
+                        </div>
+
+                        <hr>
+
+                        <a class="card-link fs-5" href="{% url 'core:events' %}">Find an Event!</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock inner_body %}
