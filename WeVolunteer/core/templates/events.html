@@ -1,33 +1,35 @@
 {% extends 'nav_footer.html' %}
 {% block inner_body %}
 <div class="flex-grow-1 bg-body-secondary">
-    <div class="mx-4 mt-5">
-        <div class="row">
-            <h2 class="logo-font fw-semibold text-center">Upcoming Events</h2>
+    <div class="">
+        <div class="mx-4 mt-4">
+            <div class="row">
+                <h2 class="logo-font fw-semibold text-md-center pt-md-3">Upcoming Events</h2>
+            </div>
         </div>
-    </div>
 
-    {% include 'partials/monthly_event_list.html#monthly-event-list' %}
+        {% include 'partials/monthly_event_list.html#monthly-event-list' %}
 
-    <div id="appended-monthly-event-list"
-         data-signals-current_month="{{ current_month }}"
-         data-signals-current_year="{{ current_year }}"></div>
+        <div id="appended-monthly-event-list"
+             data-signals-current_month="{{ current_month }}"
+             data-signals-current_year="{{ current_year }}"></div>
 
-    <div data-signals-more_events="true" id="load-more-events-div" class="row mx-4 my-5">
-        <span data-show="$more_events" class="text-center">
-            <button data-on-click="@get('{% url "core:get-next-month-events" %}')"
-                    data-indicator-_fetching_events
-                    data-attr-disabled="$_fetching_events"
-                    class="btn btn-primary fw-semibold">
+        <div data-signals-more_events="true" id="load-more-events-div" class="row mx-4 my-5">
+            <span data-show="$more_events" class="text-center">
+                <button data-on-click="@get('{% url "core:get-next-month-events" %}')"
+                        data-indicator-_fetching_events
+                        data-attr-disabled="$_fetching_events"
+                        class="btn btn-primary fw-semibold">
 
-                <span data-show="!$_fetching_events">Load More</span>
-                <span data-show="$_fetching_events">Loading....</span>
-            </button>
-        </span>
+                    <span data-show="!$_fetching_events">Load More</span>
+                    <span data-show="$_fetching_events">Loading....</span>
+                </button>
+            </span>
 
-        <span data-show="!$more_events" class="text-center fst-italic">
-            There are no more upcoming events!
-        </span>
+            <span data-show="!$more_events" class="text-center fst-italic">
+                There are no more upcoming events!
+            </span>
+        </div>
     </div>
 </div>
 {% endblock inner_body %}
