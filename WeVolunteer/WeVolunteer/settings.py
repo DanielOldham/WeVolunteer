@@ -173,7 +173,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # for production, uncomment the following line
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 GOOGLE_FONTS = ["Nunito", "Roboto"]
 
