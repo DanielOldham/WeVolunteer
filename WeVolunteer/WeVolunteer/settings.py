@@ -187,4 +187,4 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login'
 
 # TEMPORARILY DISABLE ACCOUNT SIGNUP FOR STAGING
-# ACCOUNT_ADAPTER = "core.adapter.NoSignupExceptGoogleAdapter"
+# ACCOUNT_ADAPTER = "core.adapters.NoSignupExceptGoogleAdapter"
