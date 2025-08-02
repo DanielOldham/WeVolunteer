@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 from pathlib import Path
+
+import dj_database_url
 import dotenv
 
 
@@ -52,6 +54,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -147,26 +150,20 @@ WSGI_APPLICATION = 'WeVolunteer.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+DB_DEFAULT = dj_database_url.config(
+    default= os.environ.get("DATABASE_URL"),
+    conn_max_age=600
+)
 DATABASES = {
-   'default': {
-       'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME': os.environ['DATABASE_NAME'],
-       'USER': os.environ['DATABASE_USER'],
-       'PASSWORD': os.environ['DATABASE_PASSWORD'],
-       'HOST': os.environ['DATABASE_HOST'],
-       'PORT': os.environ['DATABASE_PORT'],
-   }
+    "default": DB_DEFAULT,
 }
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
@@ -176,7 +173,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # for production, uncomment the following line
-# STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 GOOGLE_FONTS = ["Nunito", "Roboto"]
 
@@ -188,3 +185,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/accounts/login'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login'
+
+# TEMPORARILY DISABLE ACCOUNT SIGNUP FOR STAGING
+# ACCOUNT_ADAPTER = "core.adapter.NoSignupExceptGoogleAdapter"
