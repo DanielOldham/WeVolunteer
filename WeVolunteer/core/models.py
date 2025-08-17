@@ -9,7 +9,7 @@ from django.db.models import TextChoices
 
 class EventDescriptors(TextChoices):
     """
-    Enumeration for the different descriptive tags for an event.
+    Enumeration for the different event descriptor tags.
     """
     MOVING = "MOVING", "Moving"
     YARD_WORK = "YARD_WORK", "Yard Work"
@@ -33,6 +33,10 @@ class EventDescriptors(TextChoices):
 
 
 class EventLocationDescriptors(TextChoices):
+    """
+    Enumeration for the different event location descriptor tags.
+    """
+
     INDOOR = "INDOOR", "Indoor"
     OUTDOOR = "OUTDOOR", "Outdoor"
     VIRTUAL = "VIRTUAL", "Virtual"
@@ -154,12 +158,24 @@ class Organization(models.Model):
     An organization in charge of events.
     """
     name = models.CharField(max_length=255)
-    contact_phone = models.CharField(max_length=50, null=True, blank=True, verbose_name='contact phone number')
-    contact_email = models.EmailField(null=True, blank=True, verbose_name='contact email')
+    # contact_phone = models.CharField(max_length=50, null=True, blank=True, verbose_name='contact phone number')
+    # contact_email = models.EmailField(null=True, blank=True, verbose_name='contact email')
 
     def __str__(self):
         return self.name
 
+class OrganizationContact(models.Model):
+    """
+    A single contact for an organization.
+    """
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    email = models.EmailField(null=True, blank=True)
+    phone = models.CharField(max_length=50, null=True, blank=True, verbose_name='phone number')
+    notes = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
 
 class Event(models.Model):
     """
@@ -167,6 +183,7 @@ class Event(models.Model):
     """
     title = models.CharField(max_length=255)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    primary_contact = models.ForeignKey(OrganizationContact, null=True, on_delete=models.SET_NULL)
     date = models.DateField()
     start_time = models.TimeField(verbose_name='start time')
     end_time = models.TimeField(verbose_name='end time', null=True, blank=True)
