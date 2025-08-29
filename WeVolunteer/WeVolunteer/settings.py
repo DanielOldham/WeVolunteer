@@ -119,6 +119,11 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 SOCIALACCOUNT_ADAPTER = "core.models.CustomSocialAccountAdapter"
 
+# custom first last name signup form
+ACCOUNT_FORMS = {
+    'signup': 'core.forms.FirstLastNameSignupForm',
+}
+
 # TODO: set to false and confirm by POST
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 
