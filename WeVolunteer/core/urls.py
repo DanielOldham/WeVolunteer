@@ -8,4 +8,6 @@ urlpatterns = [
     path('', views.events, name='events'),
     path('about/', views.about, name='about'),
     path('events/get_next_month', views.get_next_month_events_as_sse, name='get-next-month-events'),
+    path('events/add/', views.event_add_or_edit, name='event-add'),
+    path('events/edit/<event_id>', views.event_add_or_edit, name='event-edit'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from django.shortcuts import render
 
 from WeVolunteer.utils import respond_via_sse, patch_signals_respond_via_sse
+from core.forms import EventForm
 from core.models import Event
 
 
@@ -105,3 +106,25 @@ def get_next_month_events_as_sse(request):
         context
     )
     return respond_via_sse(html_response, signals=signals, selector='#appended-monthly-event-list', patch_mode=ElementPatchMode.APPEND)
+
+
+def event_add_or_edit(request, event_id: int=None):
+    """
+    Display the form for an Event.
+    """
+
+    if request.method == "GET":
+        if event_id:
+            event = Event.objects.get(id=event_id)
+            form = EventForm(instance=event)
+        else:
+            form = EventForm()
+    elif request.method == "POST":
+        form = EventForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+    context = {
+        'form': form,
+    }
+    return render(request, "event_form.html", context)
