@@ -7,7 +7,7 @@ from django.shortcuts import render
 
 from WeVolunteer.utils import respond_via_sse, patch_signals_respond_via_sse
 from core.forms import EventForm
-from core.models import Event
+from core.models import Event, EventDescriptors
 
 
 def get_events_by_month_and_year(month_year: datetime.date):
@@ -126,5 +126,6 @@ def event_add_or_edit(request, event_id: int=None):
 
     context = {
         'form': form,
+        'event_descriptors': EventDescriptors,
     }
     return render(request, "event_form.html", context)

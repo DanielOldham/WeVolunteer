@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'django_google_fonts',
-    'template_partials'
+    'template_partials',
+    'bootstrap_datepicker_plus',
 ]
 
 

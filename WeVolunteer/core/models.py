@@ -22,7 +22,7 @@ class EventDescriptors(TextChoices):
     FUNDRAISING = "FUNDRAISING", "Fundraising"
     COMMUNITY_OUTREACH = "COMMUNITY_OUTREACH", "Community Outreach"
     DONATION_SORTING = "DONATION_SORTING", "Donation Sorting"
-    OFFICE_HELP ="OFFICE_HELP", "Office Help"
+    OFFICE_HELP = "OFFICE_HELP", "Office Help"
     ENVELOPE_STUFFING = "ENVELOPE_STUFFING", "Envelope Stuffing"
     FESTIVAL_SUPPORT = "FESTIVAL_SUPPORT", "Festival Support"
     RACE_CREW = "RACE_CREW", "Race Crew"

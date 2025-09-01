@@ -1,4 +1,5 @@
 {% extends 'nav_footer.html' %}
+{% load enum_tags %}
 {% block inner_body %}
 <div class="flex-grow-1 bg-body-secondary d-flex flex-column justify-content-center py-4">
     <div class="flex-grow-0 flex-shrink-0 container">
@@ -12,12 +13,63 @@
 
                         <form method="POST">
                             {% csrf_token %}
-                            {% for field in form.visible_fields %}
-                                <div class="form-floating mb-3">
-                                    {{ field }}
-                                    {{ field.label_tag }}
+                            <div class="form-floating mb-3">
+                                {{ form.title }}
+                                {{ form.title.label_tag }}
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                {{ form.primary_contact }}
+                                {{ form.primary_contact.label_tag }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.date }}
+                                <span class="visually-hidden">{{ form.date.label_tag }}</span>
+                            </div>
+
+                            <div class="row g-2 align-items-center mb-3">
+                                <div class="col-5">
+                                    {{ form.start_time }}
+                                    <span class="visually-hidden">{{ form.start_time.label_tag }}</span>
                                 </div>
-                            {% endfor %}
+
+                                <div class="col-2 text-center"><i class="bi bi-dash-lg"></i></div>
+
+                                <div class="col-5">
+                                    {{ form.end_time }}
+                                    <span class="visually-hidden">{{ form.end_time.label_tag }}</span>
+                                </div>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                {{ form.address }}
+                                {{ form.address.label_tag }}
+                            </div>
+
+                            <div data-signals-event_descriptor_tags="{{ form.event_descriptor_tags.value_to_string }}"
+                                 class="visually-hidden">
+                                {{ form.event_descriptor_tags }}
+                                {{ form.event_descriptor_tags.label_tag }}
+                            </div>
+                            <div class="mb-3" aria-hidden="true">
+                                {% for tag in event_descriptors %}
+                                <span data-signals="{ {{ tag }}_selected: $event_descriptor_tags.includes('{{ tag }}')}"
+                                      data-class="{'bg-wv-yellow': ${{ tag }}_selected,
+                                                   'bg-body-secondary': !${{ tag }}_selected}"
+                                      data-on-click="${{ tag }}_selected=!${{ tag }}_selected;
+                                                     $event_descriptor_tags = ${{ tag }}_selected ?
+                                                     [...$event_descriptor_tags, '{{ tag }}'] :
+                                                     $event_descriptor_tags.filter(item => item != '{{ tag }}')"
+                                      role="button"
+                                      class="badge rounded-pill text-black fs-6 fw-light py-2 px-3 my-1 me-1">{{ tag|event_descriptor_label }}</span>
+                                {% endfor %}
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                {{ form.description }}
+                                {{ form.description.label_tag }}
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -25,4 +77,5 @@
         </div>
     </div>
 </div>
+    {{ form.media }}
 {% endblock inner_body %}
