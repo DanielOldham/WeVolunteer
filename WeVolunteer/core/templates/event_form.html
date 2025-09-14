@@ -1,0 +1,153 @@
+{% extends 'nav_footer.html' %}
+{% load enum_tags %}
+{% block inner_body %}
+<div class="flex-grow-1 bg-body-secondary d-flex flex-column justify-content-center py-4">
+    <div class="flex-grow-0 flex-shrink-0 container">
+        <div class="row justify-content-md-center">
+            <div class="col col-lg-8">
+                <div class="card rounded-4 shadow">
+                    <div class="card-body mx-2 mx-md-5 my-3">
+                        <h2 class="card-title text-center fw-bold logo-font pb-2">{{ action }} Event</h2>
+
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="invalid-feedback">
+                                {{ form.non_field_errors }}
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                {{ form.title }}
+                                {{ form.title.label_tag }}
+                            </div>
+                            <div class="invalid-feedback">
+                                {{ form.title.errors }}
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                {{ form.organization }}
+                                {{ form.organization.label_tag }}
+                            </div>
+                            <div class="invalid-feedback">
+                                {{ form.organization.errors }}
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                {{ form.primary_contact }}
+                                {{ form.primary_contact.label_tag }}
+                            </div>
+                            <div class="invalid-feedback">
+                                {{ form.primary_contact.errors }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.date }}
+                                <span class="visually-hidden">{{ form.date.label_tag }}</span>
+                            </div>
+                            <div class="invalid-feedback">
+                                {{ form.date.errors }}
+                            </div>
+
+                            <div class="row g-2 align-items-center mb-3">
+                                <div class="col-5">
+                                    {{ form.start_time }}
+                                    <span class="visually-hidden">{{ form.start_time.label_tag }}</span>
+                                </div>
+
+                                <div class="col-2 text-center"><i class="bi bi-dash-lg"></i></div>
+
+                                <div class="col-5">
+                                    {{ form.end_time }}
+                                    <span class="visually-hidden">{{ form.end_time.label_tag }}</span>
+                                </div>
+                            </div>
+                            <div class="invalid-feedback">
+                                {{ form.start_time.errors }}
+                            </div>
+                            <div class="invalid-feedback">
+                                {{ form.end_time.errors }}
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                {{ form.address }}
+                                {{ form.address.label_tag }}
+                            </div>
+                            <div class="invalid-feedback">
+                                {{ form.address.errors }}
+                            </div>
+
+                            <div class="mb-3">
+                                <span class="fst-italic">Select all location descriptors that apply</span>
+                            </div>
+                            <div data-signals-location_descriptor_tags="{{ form.location_descriptor_tags.value_to_string }}"
+                                 class="visually-hidden">
+                                {{ form.location_descriptor_tags }}
+                                {{ form.location_descriptor_tags.label_tag }}
+                            </div>
+                            <div class="mb-3" aria-hidden="true">
+                                {% for tag in location_descriptors %}
+                                    <span data-signals="{ {{ tag }}_selected: $location_descriptor_tags.includes('{{ tag }}')}"
+                                      data-class="{'bg-wv-green': ${{ tag }}_selected,
+                                                   'bg-body-secondary': !${{ tag }}_selected}"
+                                      data-on-click="${{ tag }}_selected ? ((${{ tag }}_selected = false)
+                                                     || ($location_descriptor_tags = $location_descriptor_tags.filter(item => item != '{{ tag }}')))
+                                                     : (${{ tag }}_selected = true) && ($location_descriptor_tags = [...$location_descriptor_tags, '{{ tag }}'])"
+                                      role="button"
+                                      class="badge rounded-pill text-black fs-6 fw-light py-2 px-3 my-1 me-1">{{ tag|event_location_descriptor_label }}</span>
+                                {% endfor %}
+                            </div>
+                            <div class="invalid-feedback">
+                                {{ form.location_descriptor_tags.errors }}
+                            </div>
+
+                            <div class="mb-3">
+                                <span class="fst-italic">Select up to 5 descriptive tags for the event</span>
+                            </div>
+                            <div data-signals-event_descriptor_tags="{{ form.event_descriptor_tags.value_to_string }}"
+                                 class="visually-hidden">
+                                {{ form.event_descriptor_tags }}
+                                {{ form.event_descriptor_tags.label_tag }}
+                            </div>
+                            <div class="mb-3" aria-hidden="true">
+                                {% for tag in event_descriptors %}
+                                <span data-signals="{ {{ tag }}_selected: $event_descriptor_tags.includes('{{ tag }}')}"
+                                      data-class="{'bg-wv-yellow': ${{ tag }}_selected,
+                                                   'bg-body-secondary': !${{ tag }}_selected}"
+                                      {# if tag is already selected, unselect it and remove it from the event descriptor tags list #}
+                                      {# else if the number of selected tags is less than 5, select the tag and add it to the event descriptor tags list #}
+                                      data-on-click="${{ tag }}_selected ? ((${{ tag }}_selected = false)
+                                                     || ($event_descriptor_tags = $event_descriptor_tags.filter(item => item != '{{ tag }}')))
+                                                     : $event_descriptor_tags.length < 5 && ((${{ tag }}_selected = true) && ($event_descriptor_tags = [...$event_descriptor_tags, '{{ tag }}']))"
+                                      role="button"
+                                      class="badge rounded-pill text-black fs-6 fw-light py-2 px-3 my-1 me-1">{{ tag|event_descriptor_label }}</span>
+                                {% endfor %}
+                            </div>
+                            <div class="invalid-feedback">
+                                {{ form.event_descriptor_tags.errors }}
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                {{ form.description }}
+                                {{ form.description.label_tag }}
+                            </div>
+                            <div class="invalid-feedback">
+                                {{ form.description.errors }}
+                            </div>
+
+                            <div class="row align-content-between">
+                                <div class="col">
+                                    <button type="submit" class="btn btn-primary fw-bold">Submit <i class="bi bi-check2"></i></button>
+                                </div>
+
+                                <div class="col text-end">
+                                    <a href="{% url 'core:events' %}" class="btn btn-secondary fw-bold">Cancel <i class="bi bi-arrow-return-left"></i></a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    {{ form.media }}
+{% endblock inner_body %}

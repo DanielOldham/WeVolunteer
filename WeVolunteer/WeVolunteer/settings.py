@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'django_google_fonts',
-    'template_partials'
+    'template_partials',
+    'bootstrap_datepicker_plus',
 ]
 
 
@@ -167,7 +168,7 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Denver'
 USE_I18N = True
 USE_TZ = True
 

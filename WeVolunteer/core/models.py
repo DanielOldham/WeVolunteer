@@ -1,6 +1,7 @@
 import datetime
 from random import choices
 
+from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
@@ -22,7 +23,7 @@ class EventDescriptors(TextChoices):
     FUNDRAISING = "FUNDRAISING", "Fundraising"
     COMMUNITY_OUTREACH = "COMMUNITY_OUTREACH", "Community Outreach"
     DONATION_SORTING = "DONATION_SORTING", "Donation Sorting"
-    OFFICE_HELP ="OFFICE_HELP", "Office Help"
+    OFFICE_HELP = "OFFICE_HELP", "Office Help"
     ENVELOPE_STUFFING = "ENVELOPE_STUFFING", "Envelope Stuffing"
     FESTIVAL_SUPPORT = "FESTIVAL_SUPPORT", "Festival Support"
     RACE_CREW = "RACE_CREW", "Race Crew"
@@ -175,7 +176,17 @@ class OrganizationContact(models.Model):
     notes = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.name + " (" + self.organization.name + ")"
+
+
+class OrganizationAdministrator(models.Model):
+    """
+    A connection between an Organization and one single administrating User account.
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+
+
 
 class Event(models.Model):
     """
@@ -183,7 +194,7 @@ class Event(models.Model):
     """
     title = models.CharField(max_length=255)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    primary_contact = models.ForeignKey(OrganizationContact, null=True, on_delete=models.SET_NULL)
+    primary_contact = models.ForeignKey(OrganizationContact, blank=True, null=True, on_delete=models.SET_NULL)
     date = models.DateField()
     start_time = models.TimeField(verbose_name='start time')
     end_time = models.TimeField(verbose_name='end time', null=True, blank=True)
