@@ -3,11 +3,13 @@ from datetime import datetime
 
 from datastar_py.consts import ElementPatchMode
 from dateutil.relativedelta import relativedelta
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.utils import timezone
 
 from WeVolunteer.utils import respond_via_sse, patch_signals_respond_via_sse
 from core.forms import EventForm
-from core.models import Event, EventDescriptors
+from core.models import Event, EventDescriptors, EventLocationDescriptors, OrganizationAdministrator
 
 
 def get_events_by_month_and_year(month_year: datetime.date):
@@ -36,7 +38,7 @@ def events(request):
     """
 
     monthly_events = {}
-    now = datetime.today()
+    now = timezone.now()
     events_date = now
 
     num_months = 3
@@ -65,7 +67,7 @@ def get_next_month_events_as_sse(request):
     Also send the incremented month/year back to the frontend as patch signals.
     """
 
-    today = datetime.today()
+    today = timezone.now()
     month = 0
     year = 0
 
@@ -108,24 +110,50 @@ def get_next_month_events_as_sse(request):
     return respond_via_sse(html_response, signals=signals, selector='#appended-monthly-event-list', patch_mode=ElementPatchMode.APPEND)
 
 
-def event_add_or_edit(request, event_id: int=None):
+def event_add(request):
     """
-    Display the form for an Event.
+    Display and handle submission of the form for a new Event.
     """
-
-    if request.method == "GET":
-        if event_id:
-            event = Event.objects.get(id=event_id)
-            form = EventForm(instance=event)
-        else:
-            form = EventForm()
-    elif request.method == "POST":
-        form = EventForm(request.POST)
+    if request.method == "POST":
+        form = EventForm(request.POST, user=request.user)
         if form.is_valid():
             form.save()
+            return redirect("core:events")
+    else:
+        form = EventForm(user=request.user)
 
     context = {
         'form': form,
+        'action': 'Add',
         'event_descriptors': EventDescriptors,
+        'location_descriptors': EventLocationDescriptors,
+    }
+    return render(request, "event_form.html", context)
+
+
+def event_edit(request, event_id: int=None):
+    """
+    Display and handle submission of the form for an existing Event.
+    """
+
+    event = Event.objects.filter(id=event_id).first()
+    if not event:
+        return redirect(reverse('core:event-add'))
+
+    # TODO: add user to group to prevent query check?
+    if request.method == "POST":
+        form = EventForm(request.POST, instance=event, user=request.user)
+        if form.is_valid():
+            form.save()
+            # TODO: redirect to event detail page
+            return redirect('core:events')
+    else:
+        form = EventForm(instance=event, user=request.user)
+
+    context = {
+        'form': form,
+        'action': 'Edit',
+        'event_descriptors': EventDescriptors,
+        'location_descriptors': EventLocationDescriptors,
     }
     return render(request, "event_form.html", context)
