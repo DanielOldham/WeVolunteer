@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django_google_fonts',
     'template_partials',
     'bootstrap_datepicker_plus',
+    'rules.apps.AutodiscoverRulesConfig',
 ]
 
 
@@ -106,6 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
+    'rules.permissions.ObjectPermissionBackend',
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]

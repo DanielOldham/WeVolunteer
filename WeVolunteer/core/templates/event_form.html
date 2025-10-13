@@ -135,11 +135,11 @@
 
                             <div class="row align-content-between">
                                 <div class="col">
-                                    <button type="submit" class="btn btn-primary fw-bold">Submit <i class="bi bi-check2"></i></button>
+                                    <a href="{% url 'core:events' %}" class="btn btn-secondary fw-bold">Cancel <i class="bi bi-arrow-return-left"></i></a>
                                 </div>
 
                                 <div class="col text-end">
-                                    <a href="{% url 'core:events' %}" class="btn btn-secondary fw-bold">Cancel <i class="bi bi-arrow-return-left"></i></a>
+                                    <button type="submit" class="btn btn-primary fw-bold">Submit <i class="bi bi-check2"></i></button>
                                 </div>
                             </div>
                         </form>

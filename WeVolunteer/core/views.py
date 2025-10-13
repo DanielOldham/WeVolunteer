@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils import timezone
+from rules.contrib.views import permission_required, objectgetter
 
 from WeVolunteer.utils import respond_via_sse, patch_signals_respond_via_sse
 from core.forms import EventForm
@@ -110,6 +111,7 @@ def get_next_month_events_as_sse(request):
     return respond_via_sse(html_response, signals=signals, selector='#appended-monthly-event-list', patch_mode=ElementPatchMode.APPEND)
 
 
+@permission_required("events.add_event", raise_exception=True)
 def event_add(request):
     """
     Display and handle submission of the form for a new Event.
@@ -131,6 +133,7 @@ def event_add(request):
     return render(request, "event_form.html", context)
 
 
+@permission_required("events.change_event", fn=objectgetter(Event, "event_id"), raise_exception=True)
 def event_edit(request, event_id: int=None):
     """
     Display and handle submission of the form for an existing Event.
