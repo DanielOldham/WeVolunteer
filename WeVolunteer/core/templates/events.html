@@ -5,6 +5,18 @@
         <div class="row">
             <h2 class="logo-font fw-semibold text-md-center pt-md-3">Upcoming Events</h2>
         </div>
+
+        {% load rules %}
+        {% if user.is_authenticated %}
+            {% has_perm 'events.add_event' user as can_add_event %}
+            {% if can_add_event %}
+                <div class="row mt-4">
+                    <div class="col text-center">
+                        <a href="{% url 'core:event-add' %}" class="btn btn-primary fw-bold">Add New Event <i class="bi bi-calendar-plus"></i></a>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
     </div>
 
     {% include 'partials/monthly_event_list.html#monthly-event-list' %}
