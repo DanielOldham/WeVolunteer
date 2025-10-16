@@ -107,7 +107,7 @@
                                 {{ form.event_descriptor_tags }}
                                 {{ form.event_descriptor_tags.label_tag }}
                             </div>
-                            <div class="mb-3" aria-hidden="true">
+                            <div class="mb-4" aria-hidden="true">
                                 {% for tag in event_descriptors %}
                                 <span data-signals="{ {{ tag }}_selected: $event_descriptor_tags.includes('{{ tag }}')}"
                                       data-class="{'bg-wv-yellow': ${{ tag }}_selected,
@@ -125,7 +125,7 @@
                                 {{ form.event_descriptor_tags.errors }}
                             </div>
 
-                            <div class="form-floating mb-3">
+                            <div class="form-floating mb-4">
                                 {{ form.description }}
                                 {{ form.description.label_tag }}
                             </div>

@@ -3,6 +3,8 @@ from datetime import datetime
 
 from datastar_py.consts import ElementPatchMode
 from dateutil.relativedelta import relativedelta
+from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -111,6 +113,18 @@ def get_next_month_events_as_sse(request):
     return respond_via_sse(html_response, signals=signals, selector='#appended-monthly-event-list', patch_mode=ElementPatchMode.APPEND)
 
 
+def event_details(request, event_id):
+    """
+    Display a detailed page for one specific event.
+    """
+    event = Event.objects.filter(id=event_id).first()
+    if event:
+        return render(request, "event_details.html", {"event": event})
+    else:
+        raise Http404("Event does not exist")
+
+
+@login_required()
 @permission_required("events.add_event", raise_exception=True)
 def event_add(request):
     """
@@ -132,9 +146,9 @@ def event_add(request):
     }
     return render(request, "event_form.html", context)
 
-
+@login_required()
 @permission_required("events.change_event", fn=objectgetter(Event, "event_id"), raise_exception=True)
-def event_edit(request, event_id: int=None):
+def event_edit(request, event_id: int):
     """
     Display and handle submission of the form for an existing Event.
     """
