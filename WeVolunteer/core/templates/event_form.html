@@ -5,7 +5,7 @@
     <div class="flex-grow-0 flex-shrink-0 container">
         <div class="row justify-content-md-center">
             <div class="col col-lg-8">
-                <div class="card rounded-4 shadow">
+                <div class="card rounded-4">
                     <div class="card-body mx-2 mx-md-5 my-3">
                         <h2 class="card-title text-center fw-bold logo-font pb-2">{{ action }} Event</h2>
 
@@ -107,7 +107,7 @@
                                 {{ form.event_descriptor_tags }}
                                 {{ form.event_descriptor_tags.label_tag }}
                             </div>
-                            <div class="mb-3" aria-hidden="true">
+                            <div class="mb-4" aria-hidden="true">
                                 {% for tag in event_descriptors %}
                                 <span data-signals="{ {{ tag }}_selected: $event_descriptor_tags.includes('{{ tag }}')}"
                                       data-class="{'bg-wv-yellow': ${{ tag }}_selected,
@@ -125,7 +125,7 @@
                                 {{ form.event_descriptor_tags.errors }}
                             </div>
 
-                            <div class="form-floating mb-3">
+                            <div class="form-floating mb-4">
                                 {{ form.description }}
                                 {{ form.description.label_tag }}
                             </div>
@@ -135,7 +135,14 @@
 
                             <div class="row align-content-between">
                                 <div class="col">
-                                    <a href="{% url 'core:events' %}" class="btn btn-secondary fw-bold">Cancel <i class="bi bi-arrow-return-left"></i></a>
+                                    <a href="
+                                        {% if form.instance.pk %}
+                                            {% url 'core:event-details' form.instance.id %}
+                                        {% else %}
+                                             {% url 'core:events' %}
+                                        {% endif %}" class="btn btn-link fw-bold">
+                                        <i class="bi bi-arrow-return-left"></i> Cancel
+                                    </a>
                                 </div>
 
                                 <div class="col text-end">
