@@ -1,13 +1,113 @@
 {% extends 'nav_footer.html' %}
+{% load enum_tags %}
 {% block inner_body %}
 <div class="flex-grow-1 bg-body-secondary d-flex flex-column justify-content-center py-4">
     <div class="flex-grow-0 flex-shrink-0 container">
         <div class="row justify-content-md-center">
-            <div class="col col-lg-8">
+            <div class="col col-md-8 col-lg-6">
                 <div class="card rounded-4 shadow-sm">
-                    <div class="card-body mx-2 mx-md-5 my-3">
-                        <h2 class="card-title text-center fw-bold logo-font pb-2">{{ event.title }}</h2>
+                    <div class="card-body mx-2 mx-md-4 my-3">
+                        <h2 class="card-title text-center fw-bold logo-font">{{ event.title }}</h2>
 
+                        <hr>
+
+                        {# tags #}
+                        <div class="pt-1 pb-2">
+                            {% if event.event_descriptor_tags %}
+                                {% for tag in event.event_descriptor_tags %}
+                                    <span class="badge rounded-pill bg-wv-yellow text-black fs-6 fw-light py-2 px-3 my-1 me-1">{{ tag|event_descriptor_label }}</span>
+                                {% endfor %}
+                            {% endif %}
+                            {% for tag in event.time_of_day %}
+                                <span class="badge rounded-pill bg-wv-pink text-black fs-6 fw-light py-2 px-3 my-1 me-1">{{ tag|time_of_day_label }}</span>
+                            {% endfor %}
+                            {% if event.location_descriptor_tags %}
+                                {% for tag in event.location_descriptor_tags %}
+                                    <span class="badge rounded-pill bg-wv-green text-black fs-6 fw-light py-2 px-3 my-1 me-1">{{ tag|event_location_descriptor_label }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        {# date #}
+                        <div class="card-text py-1">
+                            <span class="pe-2"><i class="bi bi-calendar-event"></i></span>{{ event.date|date:"D M d, Y" }}
+                        </div>
+
+                        {# time #}
+                        <div class="card-text py-1">
+                            <span class="pe-2"><i class="bi bi-clock"></i></span>{{ event.start_time|time:"g:i A" }}{% if event.end_time %} - {{ event.end_time|time:"g:i A" }}{% endif %}
+                        </div>
+
+                        {# address #}
+                        {% if request.user.is_authenticated %}
+                            <div class="card-text py-1 text-truncate">
+                                <span class="pe-2"><i class="bi bi-geo-alt"></i></span>{% if event.address %}{{ event.address }}{% else %}<span class="fst-italic">Location not given</span>{% endif %}
+                            </div>
+                        {% endif %}
+
+                        <hr class="">
+
+                        {# org name #}
+                        <div class="card-text py-1 text-truncate fw-semibold">
+                            <span class="pe-2"><i class="bi bi-people"></i></span>{{ event.organization.name }}
+                        </div>
+
+                        {% if request.user.is_authenticated and event.primary_contact %}
+                            {# contact name #}
+                            <div class="card-text py-1">
+                                <span class="pe-2"><i class="bi bi-person-vcard"></i></span>{{ event.primary_contact.name }}
+                            </div>
+
+                            {# contact email #}
+                            {% if event.primary_contact.email %}
+                            <div class="card-text py-1">
+                                <span class="pe-2"><i class="bi bi-envelope"></i></span>{{ event.primary_contact.email }}
+                            </div>
+                            {% endif %}
+
+                            {# contact phone #}
+                            {% if event.primary_contact.phone %}
+                            <div class="card-text py-1">
+                                <span class="pe-2"><i class="bi bi-telephone"></i></span>{{ event.primary_contact.phone }}
+                            </div>
+                            {% endif %}
+
+                            {# contact notes #}
+                            {% if event.primary_contact.notes %}
+                            <div class="card-text py-1 text-truncate">
+                                <span class="pe-2"><i class="bi bi-info-square"></i></span><span class="fst-italic">{{ event.primary_contact.notes }}</span>
+                            </div>
+                            {% endif %}
+                        {% endif %}
+
+                        <hr class="">
+
+                        {# description #}
+                        <div class="card-text py-1 text-truncate-3">
+                            {% if event.description %}
+                                {{ event.description }}
+                            {% else %}
+                                <span class="fst-italic">No details</span>
+                            {% endif %}
+                        </div>
+
+                        <hr>
+
+                        <div class="row align-content-between">
+                            <div class="col">
+                                <a href="{% url 'core:events' %}" class="card-link fs-6"><i class="bi bi-arrow-return-left"></i> Back to Events</a>
+                            </div>
+
+                            {% load rules %}
+                            {% if user.is_authenticated %}
+                                {% has_perm 'events.change_event' user event as can_edit_event %}
+                                {% if can_edit_event %}
+                                    <div class="col text-end">
+                                        <a href="{% url 'core:event-edit' event.id %}" class="card-link">Edit this Event <i class="bi bi-pencil-square"></i></a>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
