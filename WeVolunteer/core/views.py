@@ -157,13 +157,12 @@ def event_edit(request, event_id: int):
     if not event:
         return redirect(reverse('core:event-add'))
 
-    # TODO: add user to group to prevent query check?
     if request.method == "POST":
         form = EventForm(request.POST, instance=event, user=request.user)
         if form.is_valid():
             form.save()
             # TODO: redirect to event detail page
-            return redirect('core:events')
+            return redirect('core:event-details', event.id)
     else:
         form = EventForm(instance=event, user=request.user)
 

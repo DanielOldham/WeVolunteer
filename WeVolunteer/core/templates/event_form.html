@@ -42,9 +42,12 @@
                             <div class="mb-3">
                                 {{ form.date }}
                                 <span class="visually-hidden">{{ form.date.label_tag }}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                {{ form.date.errors }}
+
+                                {% for error in form.date.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
                             </div>
 
                             <div class="row g-2 align-items-center mb-3">

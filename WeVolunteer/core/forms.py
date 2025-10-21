@@ -1,6 +1,8 @@
 from bootstrap_datepicker_plus.widgets import DatePickerInput, TimePickerInput
 from django import forms
 from allauth.account.forms import SignupForm
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 from django.contrib.auth.models import User
 
 from core.models import Event, Organization, OrganizationContact, OrganizationAdministrator
@@ -17,6 +19,13 @@ class FirstLastNameSignupForm(SignupForm):
 
 
 class EventForm(forms.ModelForm):
+    def clean_date(self):
+        date = self.cleaned_data["date"]
+        if date < timezone.now().date():
+            raise ValidationError("You cannot schedule an event in the past!")
+
+        return date
+
     class Meta:
         model = Event
         fields = "__all__"
