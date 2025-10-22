@@ -11,32 +11,41 @@
 
                         <form method="POST">
                             {% csrf_token %}
-                            <div class="invalid-feedback">
+                            <div class="text-danger fs-7">
                                 {{ form.non_field_errors }}
                             </div>
 
                             <div class="form-floating mb-3">
                                 {{ form.title }}
                                 {{ form.title.label_tag }}
-                            </div>
-                            <div class="invalid-feedback">
-                                {{ form.title.errors }}
+
+                                {% for error in form.title.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
                             </div>
 
                             <div class="form-floating mb-3">
                                 {{ form.organization }}
                                 {{ form.organization.label_tag }}
-                            </div>
-                            <div class="invalid-feedback">
-                                {{ form.organization.errors }}
+
+                                {% for error in form.organization.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
                             </div>
 
                             <div class="form-floating mb-3">
                                 {{ form.primary_contact }}
                                 {{ form.primary_contact.label_tag }}
-                            </div>
-                            <div class="invalid-feedback">
-                                {{ form.primary_contact.errors }}
+
+                                {% for error in form.primary_contact.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
                             </div>
 
                             <div class="mb-3">
@@ -54,6 +63,12 @@
                                 <div class="col-5">
                                     {{ form.start_time }}
                                     <span class="visually-hidden">{{ form.start_time.label_tag }}</span>
+
+                                    {% for error in form.start_time.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                    {% endfor %}
                                 </div>
 
                                 <div class="col-2 text-center"><i class="bi bi-dash-lg"></i></div>
@@ -61,25 +76,39 @@
                                 <div class="col-5">
                                     {{ form.end_time }}
                                     <span class="visually-hidden">{{ form.end_time.label_tag }}</span>
+
+                                    {% for error in form.end_time.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ error }}
+                                    </div>
+                                    {% endfor %}
                                 </div>
-                            </div>
-                            <div class="invalid-feedback">
-                                {{ form.start_time.errors }}
-                            </div>
-                            <div class="invalid-feedback">
-                                {{ form.end_time.errors }}
+
                             </div>
 
                             <div class="form-floating mb-3">
                                 {{ form.address }}
                                 {{ form.address.label_tag }}
-                            </div>
-                            <div class="invalid-feedback">
-                                {{ form.address.errors }}
+
+                                {% for error in form.address.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
                             </div>
 
                             <div class="mb-3">
                                 <span class="fst-italic">Select all location descriptors that apply</span>
+
+                                {% if form.location_descriptor_tags.errors %}
+                                <div class="text-danger fs-7 mt-1">
+                                    {% for error in form.location_descriptor_tags.errors %}
+                                        <div>
+                                            {{ error }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
                             </div>
                             <div data-signals-location_descriptor_tags="{{ form.location_descriptor_tags.value_to_string }}"
                                  class="visually-hidden">
@@ -98,12 +127,19 @@
                                       class="badge rounded-pill text-black fs-6 fw-light py-2 px-3 my-1 me-1">{{ tag|event_location_descriptor_label }}</span>
                                 {% endfor %}
                             </div>
-                            <div class="invalid-feedback">
-                                {{ form.location_descriptor_tags.errors }}
-                            </div>
 
                             <div class="mb-3">
-                                <span class="fst-italic">Select up to 5 descriptive tags for the event</span>
+                                <div class="fst-italic">Select up to 5 descriptive tags for the event</div>
+
+                                {% if form.event_descriptor_tags.errors %}
+                                <div class="text-danger fs-7 mt-1">
+                                    {% for error in form.event_descriptor_tags.errors %}
+                                        <div>
+                                            {{ error }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
                             </div>
                             <div data-signals-event_descriptor_tags="{{ form.event_descriptor_tags.value_to_string }}"
                                  class="visually-hidden">
@@ -124,16 +160,16 @@
                                       class="badge rounded-pill text-black fs-6 fw-light py-2 px-3 my-1 me-1">{{ tag|event_descriptor_label }}</span>
                                 {% endfor %}
                             </div>
-                            <div class="invalid-feedback">
-                                {{ form.event_descriptor_tags.errors }}
-                            </div>
 
                             <div class="form-floating mb-4">
                                 {{ form.description }}
                                 {{ form.description.label_tag }}
-                            </div>
-                            <div class="invalid-feedback">
-                                {{ form.description.errors }}
+
+                                {% for error in form.description.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
                             </div>
 
                             <div class="row align-content-between">

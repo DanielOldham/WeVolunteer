@@ -30,7 +30,6 @@ def about(request):
     Django view.
     Render the about page.
     """
-
     return render(request, "about.html")
 
 
@@ -91,7 +90,6 @@ def get_next_month_events_as_sse(request):
         signals = {
             "more_events": False,
         }
-
         return patch_signals_respond_via_sse(signals)
 
     queryset = get_events_by_month_and_year(events_date)
@@ -117,6 +115,7 @@ def event_details(request, event_id):
     """
     Display a detailed page for one specific event.
     """
+
     event = Event.objects.filter(id=event_id).first()
     if event:
         return render(request, "event_details.html", {"event": event})
@@ -130,6 +129,7 @@ def event_add(request):
     """
     Display and handle submission of the form for a new Event.
     """
+
     if request.method == "POST":
         form = EventForm(request.POST, user=request.user)
         if form.is_valid():
@@ -145,6 +145,7 @@ def event_add(request):
         'location_descriptors': EventLocationDescriptors,
     }
     return render(request, "event_form.html", context)
+
 
 @login_required()
 @permission_required("events.change_event", fn=objectgetter(Event, "event_id"), raise_exception=True)

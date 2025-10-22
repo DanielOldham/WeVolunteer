@@ -71,6 +71,8 @@ nav {
     box-shadow: 0 5px 2px -2px rgba(0,0,0,0.15);
 }
 
+/* text and font */
+
 .logo-font {
     font-family: 'Nunito', 'Roboto Light', serif;
 }
@@ -81,6 +83,10 @@ nav {
   overflow: hidden;
   -webkit-line-clamp: 3; /* number of lines to show */
   line-clamp: 3;
+}
+
+.fs-7 {
+    font-size: 0.875em;
 }
 
 /* color */
@@ -103,3 +109,4 @@ nav {
 .text-wv-purple {
     color: var(--wv-purple);
 }
+
