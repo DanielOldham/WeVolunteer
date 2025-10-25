@@ -33,6 +33,10 @@ class EventForm(forms.ModelForm):
     Django ModelForm for adding or editing an Event.
     """
 
+    past_date_error = "Date must not be in the past"
+    start_time_error = "Start time must be before end time"
+    end_time_error = "End time must be after start time"
+
     def clean(self):
         """
         Form level clean method.
@@ -44,8 +48,8 @@ class EventForm(forms.ModelForm):
         end_time = cleaned_data.get("end_time")
         if end_time:
             if start_time > end_time:
-                self.add_error("start_time", "Start time must be before end time")
-                self.add_error("end_time", "End time must be after start time")
+                self.add_error("start_time", self.start_time_error)
+                self.add_error("end_time", self.end_time_error)
 
         organization = cleaned_data.get("organization")
         primary_contact = cleaned_data.get("primary_contact")
@@ -53,8 +57,8 @@ class EventForm(forms.ModelForm):
             if primary_contact.organization != organization:
                 self.add_error("primary_contact", "Primary contact must belong to this event's organization")
 
-        add_invalid_class_to_form_error_fields(self)
-
+        if self.errors:
+            add_invalid_class_to_form_error_fields(self)
 
     def clean_date(self):
         """
@@ -63,9 +67,8 @@ class EventForm(forms.ModelForm):
 
         date = self.cleaned_data["date"]
         if date < timezone.now().date():
-            raise ValidationError("Date must not be in the past")
+            raise ValidationError(self.past_date_error)
         return date
-
 
     def clean_event_descriptor_tags(self):
         """
@@ -77,7 +80,6 @@ class EventForm(forms.ModelForm):
             raise ValidationError("You may only select up to 5 descriptive tags")
         return tags
 
-
     class Meta:
         model = Event
         fields = "__all__"
@@ -86,7 +88,6 @@ class EventForm(forms.ModelForm):
             "start_time": TimePickerInput(options={"format": "hh:mm A"}),
             "end_time": TimePickerInput(options={"format": "hh:mm A"}),
         }
-
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
