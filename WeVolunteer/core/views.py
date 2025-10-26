@@ -6,13 +6,12 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import render, redirect
-from django.urls import reverse
 from django.utils import timezone
 from rules.contrib.views import permission_required, objectgetter
 
 from WeVolunteer.utils import respond_via_sse, patch_signals_respond_via_sse
 from core.forms import EventForm
-from core.models import Event, EventDescriptors, EventLocationDescriptors, OrganizationAdministrator
+from core.models import Event, EventDescriptors, EventLocationDescriptors
 
 
 def get_events_by_month_and_year(month_year: datetime.date):
@@ -156,13 +155,12 @@ def event_edit(request, event_id: int):
 
     event = Event.objects.filter(id=event_id).first()
     if not event:
-        return redirect(reverse('core:event-add'))
+        raise Http404("Event does not exist")
 
     if request.method == "POST":
         form = EventForm(request.POST, instance=event, user=request.user)
         if form.is_valid():
             form.save()
-            # TODO: redirect to event detail page
             return redirect('core:event-details', event.id)
     else:
         form = EventForm(instance=event, user=request.user)

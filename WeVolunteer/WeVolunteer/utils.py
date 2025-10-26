@@ -14,16 +14,16 @@ def respond_via_sse(
     selector=None,
     patch_mode: ElementPatchMode=None,
     url=None,
-):
+) -> HttpResponse:
     """
     Respond to a request with a Server-Sent Event (SSE) response by patching elements.
 
     :param html_response: The HTML content to send as an SSE
-    :param signals: patch these signals
+    :param signals: Optional dictionary of signals to patch
     :param selector: Optional selector used to select fragments
     :param patch_mode: Optional patch mode used to patch elements
     :param url: Optional URL for saving URL state
-    :return: A ServerSentEventGenerator that yields the HTML response
+    :return: An HttpResponse of the ServerSentEventGenerator that yields the HTML response
     """
     sse_response = ServerSentEventGenerator.patch_elements(
         html_response.content.decode("utf-8"), selector=selector, mode=patch_mode
@@ -43,7 +43,12 @@ def respond_via_sse(
     return response
 
 
-def patch_signals_respond_via_sse(signals):
+def patch_signals_respond_via_sse(signals) -> HttpResponse:
+    """
+    Respond to a request with a Server-Sent Event (SSE) response by only patching Datastar signals.
+
+    :param signals: Dictionary of signals to patch
+    """
     sse_response = ServerSentEventGenerator.patch_signals(signals)
 
     response = HttpResponse(sse_response)
@@ -54,12 +59,12 @@ def patch_signals_respond_via_sse(signals):
     return response
 
 
-def remove_respond_via_sse(selector):
+def remove_respond_via_sse(selector) -> HttpResponse:
     """
     Respond to a request with a Server-Sent Event (SSE) response by removing elements.
 
-    :param selector: Selector used to select elements.
-    :return: A ServerSentEventGenerator that yields the HTML response.
+    :param selector: Selector used to select elements
+    :return: An HttpResponse of the ServerSentEventGenerator that yields the HTML response
     """
 
     sse_response = ServerSentEventGenerator.remove_elements(selector)
