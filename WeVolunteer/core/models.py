@@ -113,10 +113,8 @@ def get_time_of_day_enum_list(time_1 : datetime.time, time_2 : datetime.time=Non
     :return: list of TimeOfDay Enum objects
     """
 
-    if not time_1 and not time_2:
-        return []
-    if not time_1 or not time_2: # if either null/empty
-        time = time_1 if time_1 else time_2
+    if not time_2:
+        time = time_1
         for key, value in time_of_day_ranges.items():
             if point_in_range(time, value[0], value[1]):
                 return [key]

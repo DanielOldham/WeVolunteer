@@ -6,13 +6,12 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import render, redirect
-from django.urls import reverse
 from django.utils import timezone
 from rules.contrib.views import permission_required, objectgetter
 
 from WeVolunteer.utils import respond_via_sse, patch_signals_respond_via_sse
 from core.forms import EventForm
-from core.models import Event, EventDescriptors, EventLocationDescriptors, OrganizationAdministrator
+from core.models import Event, EventDescriptors, EventLocationDescriptors
 
 
 def get_events_by_month_and_year(month_year: datetime.date):
@@ -30,7 +29,6 @@ def about(request):
     Django view.
     Render the about page.
     """
-
     return render(request, "about.html")
 
 
@@ -41,7 +39,7 @@ def events(request):
     """
 
     monthly_events = {}
-    now = timezone.now()
+    now = timezone.now().date()
     events_date = now
 
     num_months = 3
@@ -71,36 +69,31 @@ def get_next_month_events_as_sse(request):
     """
 
     today = timezone.now()
-    month = 0
-    year = 0
+    signals = {"next_month_events_error": False}
 
     # get current month and year from datastar signals dict
     try:
-        qdict = json.loads(request.GET.get("datastar", "{}"))
+        qdict = json.loads(request.GET.get("datastar"))
         month = qdict.get("current_month", today.month)
         year = qdict.get("current_year", today.year)
     except TypeError:
-        pass
+        signals["next_month_events_error"] = True
+        return patch_signals_respond_via_sse(signals)
 
-    # increment month by using relativedelta in case the year rolls over
+    # increment month by using relative delta in case the year rolls over
     events_date = datetime(year=year, month=month, day=1)
     events_date = events_date + relativedelta(months=+1)
 
     # check and see if any future events
     if not Event.objects.filter(date__gte=events_date).exists():
-        signals = {
-            "more_events": False,
-        }
-
+        signals["more_events"] = False
         return patch_signals_respond_via_sse(signals)
 
     queryset = get_events_by_month_and_year(events_date)
 
     monthly_events = {f"{events_date.strftime('%B')} {events_date.year}": queryset}
-    signals = {
-        "current_month": events_date.month,
-        "current_year": events_date.year,
-    }
+    signals["current_month"] = events_date.month
+    signals["current_year"] = events_date.year
     context = {
         'monthly_events': monthly_events,
     }
@@ -117,6 +110,7 @@ def event_details(request, event_id):
     """
     Display a detailed page for one specific event.
     """
+
     event = Event.objects.filter(id=event_id).first()
     if event:
         return render(request, "event_details.html", {"event": event})
@@ -130,11 +124,12 @@ def event_add(request):
     """
     Display and handle submission of the form for a new Event.
     """
+
     if request.method == "POST":
         form = EventForm(request.POST, user=request.user)
         if form.is_valid():
-            form.save()
-            return redirect("core:events")
+            event = form.save()
+            return redirect('core:event-details', event.id)
     else:
         form = EventForm(user=request.user)
 
@@ -146,6 +141,7 @@ def event_add(request):
     }
     return render(request, "event_form.html", context)
 
+
 @login_required()
 @permission_required("events.change_event", fn=objectgetter(Event, "event_id"), raise_exception=True)
 def event_edit(request, event_id: int):
@@ -153,17 +149,14 @@ def event_edit(request, event_id: int):
     Display and handle submission of the form for an existing Event.
     """
 
+    # don't need to check if event exists because the permission required middleware checks automatically
     event = Event.objects.filter(id=event_id).first()
-    if not event:
-        return redirect(reverse('core:event-add'))
 
-    # TODO: add user to group to prevent query check?
     if request.method == "POST":
         form = EventForm(request.POST, instance=event, user=request.user)
         if form.is_valid():
             form.save()
-            # TODO: redirect to event detail page
-            return redirect('core:events')
+            return redirect('core:event-details', event.id)
     else:
         form = EventForm(instance=event, user=request.user)
 

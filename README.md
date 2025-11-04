@@ -1,8 +1,6 @@
 # WeVolunteer
 
----
-
-# Developer Setup
+## Developer Setup
 
 Since these directions are mainly for my own reference, they will be MacOS centric.
 `$ROOT` refers to the project root directory.

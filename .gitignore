@@ -12,6 +12,9 @@ wheels/
 # dotenv
 .env*
 
+# tests
+.coverage
+
 # JetBrains
 .idea/
 
