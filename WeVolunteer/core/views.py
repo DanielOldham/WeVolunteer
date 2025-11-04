@@ -39,7 +39,7 @@ def events(request):
     """
 
     monthly_events = {}
-    now = timezone.now()
+    now = timezone.now().date()
     events_date = now
 
     num_months = 3
@@ -69,35 +69,31 @@ def get_next_month_events_as_sse(request):
     """
 
     today = timezone.now()
-    month = 0
-    year = 0
+    signals = {"next_month_events_error": False}
 
     # get current month and year from datastar signals dict
     try:
-        qdict = json.loads(request.GET.get("datastar", "{}"))
+        qdict = json.loads(request.GET.get("datastar"))
         month = qdict.get("current_month", today.month)
         year = qdict.get("current_year", today.year)
     except TypeError:
-        pass
+        signals["next_month_events_error"] = True
+        return patch_signals_respond_via_sse(signals)
 
-    # increment month by using relativedelta in case the year rolls over
+    # increment month by using relative delta in case the year rolls over
     events_date = datetime(year=year, month=month, day=1)
     events_date = events_date + relativedelta(months=+1)
 
     # check and see if any future events
     if not Event.objects.filter(date__gte=events_date).exists():
-        signals = {
-            "more_events": False,
-        }
+        signals["more_events"] = False
         return patch_signals_respond_via_sse(signals)
 
     queryset = get_events_by_month_and_year(events_date)
 
     monthly_events = {f"{events_date.strftime('%B')} {events_date.year}": queryset}
-    signals = {
-        "current_month": events_date.month,
-        "current_year": events_date.year,
-    }
+    signals["current_month"] = events_date.month
+    signals["current_year"] = events_date.year
     context = {
         'monthly_events': monthly_events,
     }
@@ -132,8 +128,8 @@ def event_add(request):
     if request.method == "POST":
         form = EventForm(request.POST, user=request.user)
         if form.is_valid():
-            form.save()
-            return redirect("core:events")
+            event = form.save()
+            return redirect('core:event-details', event.id)
     else:
         form = EventForm(user=request.user)
 

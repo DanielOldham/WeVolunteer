@@ -1,7 +1,7 @@
 {% extends 'nav_footer.html' %}
 {% block inner_body %}
 <div class="flex-grow-1 bg-body-secondary">
-    <div class="mx-4 mt-3">
+    <div class="mx-4 mt-4">
         <div class="row">
             <h2 class="logo-font fw-semibold text-md-center pt-md-3">Upcoming Events</h2>
         </div>
@@ -27,7 +27,7 @@
 
     <div data-signals-more_events="true" id="load-more-events-div" class="row mx-4 my-5">
         <span data-show="$more_events" class="text-center">
-            <button data-on-click="@get('{% url "core:get-next-month-events" %}')"
+            <button data-on-click="@get('{% url "core:get-next-month-events" %}') && ($next_month_events_error = false)"
                     data-indicator-_fetching_events
                     data-attr-disabled="$_fetching_events"
                     class="btn btn-primary fw-semibold">
@@ -37,8 +37,13 @@
             </button>
         </span>
 
-        <span data-show="!$more_events" class="text-center fst-italic">
+        <span data-show="!$more_events && !$next_month_events_error" class="text-center fst-italic">
             There are no more upcoming events!
+        </span>
+    </div>
+    <div data-show="$next_month_events_error" class="row mb-4">
+        <span class="text-center text-danger fst-italic">
+            There was an error fetching more events. Please refresh or try again later.
         </span>
     </div>
 </div>
