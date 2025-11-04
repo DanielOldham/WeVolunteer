@@ -149,9 +149,8 @@ def event_edit(request, event_id: int):
     Display and handle submission of the form for an existing Event.
     """
 
+    # don't need to check if event exists because the permission required middleware checks automatically
     event = Event.objects.filter(id=event_id).first()
-    if not event:
-        raise Http404("Event does not exist")
 
     if request.method == "POST":
         form = EventForm(request.POST, instance=event, user=request.user)

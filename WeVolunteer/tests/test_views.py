@@ -20,6 +20,10 @@ from core.views import (
 from datastar_py.consts import ElementPatchMode
 
 class ViewsTests(TestCase):
+    """
+    Test class for the core module views.
+    """
+
     def setUp(self):
         # create user, organization, and admin links
         self.org = Organization.objects.create(name="Org")
@@ -118,8 +122,7 @@ class ViewsTests(TestCase):
         self.assertIn("event", response.context)
 
     def test_event_details_not_found(self):
-        event = Event.objects.first()
-        request = RequestFactory().get(f"/events/9999")
+        request = RequestFactory().get("/events/9999")
         with self.assertRaises(Http404):
             event_details(request, 9999)
 
@@ -168,10 +171,11 @@ class ViewsTests(TestCase):
     @patch("core.views.login_required", lambda x=None, **kwargs: (lambda y: y))
     @patch("core.views.permission_required", lambda *a, **kw: (lambda y: y))
     def test_event_edit_not_found(self):
-        request = RequestFactory().get(f"/events/edit/9999")
+        event_id = 10
+        request = RequestFactory().get(f"/events/edit/{event_id}")
         request.user = self.user
         with self.assertRaises(Http404):
-            event_edit(request, event_id=9999)
+            event_edit(request, event_id=event_id)
 
     @patch("core.views.login_required", lambda x=None, **kwargs: (lambda y: y))
     @patch("core.views.permission_required", lambda *a, **kw: (lambda y: y))
@@ -184,7 +188,7 @@ class ViewsTests(TestCase):
             "start_time": "10:00AM",
             "end_time": "12:00PM",
         }
-        request = RequestFactory().post(f"/events/{event.id}/edit", post_data)
+        request = RequestFactory().post(f"/events/edit/{event.id}", post_data)
         request.user = self.user
         with patch("core.views.EventForm") as mock_event_form:
             mock_form = mock_event_form.return_value

@@ -9,6 +9,10 @@ from core.rules import (
 
 
 class RulesPredicateTests(TestCase):
+    """
+    Test class for the Django Rules and Predicates.
+    """
+
     def setUp(self):
         # Create a user and an organization
         self.user = User.objects.create(username="john_doe")
