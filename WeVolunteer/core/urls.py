@@ -11,4 +11,5 @@ urlpatterns = [
     path('events/<event_id>', views.event_details, name='event-details'),
     path('events/add/', views.event_add, name='event-add'),
     path('events/edit/<event_id>', views.event_edit, name='event-edit'),
+    path('organizations/', views.organizations, name='organizations'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

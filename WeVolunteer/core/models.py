@@ -157,8 +157,8 @@ class Organization(models.Model):
     An organization in charge of events.
     """
     name = models.CharField(max_length=255)
-    # contact_phone = models.CharField(max_length=50, null=True, blank=True, verbose_name='contact phone number')
-    # contact_email = models.EmailField(null=True, blank=True, verbose_name='contact email')
+    website = models.CharField(max_length=255, null=True, blank=True)
+    about = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.name

@@ -11,7 +11,7 @@ from rules.contrib.views import permission_required, objectgetter
 
 from WeVolunteer.utils import respond_via_sse, patch_signals_respond_via_sse
 from core.forms import EventForm
-from core.models import Event, EventDescriptors, EventLocationDescriptors
+from core.models import Event, EventDescriptors, EventLocationDescriptors, Organization
 
 
 def get_events_by_month_and_year(month_year: datetime.date):
@@ -26,7 +26,6 @@ def get_events_by_month_and_year(month_year: datetime.date):
 
 def about(request):
     """
-    Django view.
     Render the about page.
     """
     return render(request, "about.html")
@@ -34,7 +33,6 @@ def about(request):
 
 def events(request):
     """
-    Django view.
     Render the events page.
     """
 
@@ -59,6 +57,20 @@ def events(request):
 
     return render(request, 'events.html', context)
 
+def organizations(request):
+    """
+    Render the organizations page.
+    """
+
+    upcoming_events = Event.objects.filter(date__gte=timezone.now().date())
+    orgs = Organization.objects.all()
+    org_event_counts = {org.id: len(upcoming_events.filter(organization=org)) for org in orgs}
+
+    context = {
+        "org_list": orgs,
+        "org_event_counts": org_event_counts,
+    }
+    return render(request, "organizations.html", context=context)
 
 def get_next_month_events_as_sse(request):
     """
