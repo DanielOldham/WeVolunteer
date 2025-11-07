@@ -1,5 +1,7 @@
 # WeVolunteer
 
+WeVolunteer was created by Weber State students and alumni with one goal: to make volunteering easier, more accessible, and more impactful in our local community. Based in Ogden, Utah, our mission is to bridge the gap between organizations that need help and individuals who want to give back. Whether you’re a student looking for service hours, a club searching for group opportunities, or a nonprofit needing reliable support, WeVolunteer simplifies the process. Our platform allows volunteers to view upcoming events, see all the essential details, and directly connect to the event coordinator. By connecting people with purpose, we’re building a stronger, more connected community one event at a time.
+
 ## Developer Setup
 
 Since these directions are mainly for my own reference, they will be MacOS centric.
@@ -78,3 +80,25 @@ Run
 python manage.py runserver
 ```
 Navigate to http://127.0.0.1:8000 to view the application!
+
+#### 8. Tests
+Run all the tests with
+```
+python manage.py test
+```
+
+You can also generate the code coverage with
+```
+coverage run manage.py test
+```
+
+After generating the coverage, print a simple text report with 
+```
+coverage report
+```
+
+You can also generate an interactive html report with 
+```
+coverage html
+```
+View the report by opening `$ROOT/WeVolunteer/htmlcov/index.html` in your browser.

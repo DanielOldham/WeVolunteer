@@ -26,6 +26,7 @@ def get_events_by_month_and_year(month_year: datetime.date):
 
 def about(request):
     """
+    Django view.
     Render the about page.
     """
     return render(request, "about.html")
@@ -33,6 +34,7 @@ def about(request):
 
 def events(request):
     """
+    Django view.
     Render the events page.
     """
 
@@ -224,7 +226,7 @@ def organization_details_get_next_past_events_as_sse(request, org_id):
 
     Locate the currently displayed past events and the count to load from the request datastar dictionary,
     calculate the slice of additional past events to show, generate the html response, and return as an SSE.
-    Also send the new index back as a patched signal.
+    Also send the new list of displayed past event ids back as a patched signal.
     """
 
     org = Organization.objects.filter(id=org_id).first()
