@@ -4,9 +4,10 @@ from core.templatetags.enum_tags import (
     event_location_descriptor_label,
     time_of_day_label,
 )
+from core.templatetags.dict_tags import index_dict
 from core.models import EventDescriptors, EventLocationDescriptors, TimeOfDay
 
-class TemplateTagsTests(SimpleTestCase):
+class EnumTagsTests(SimpleTestCase):
     """
     Test class for the custom template tags.
     """
@@ -38,3 +39,27 @@ class TemplateTagsTests(SimpleTestCase):
     def test_time_of_day_label_with_invalid_value(self):
         invalid_value = "INVALID_TIME"
         self.assertEqual(time_of_day_label(invalid_value), invalid_value)
+
+
+class DictTagsTests(SimpleTestCase):
+    def test_index_dict_with_valid_key(self):
+        sample_dict = {"a": 1, "b": 2}
+        self.assertEqual(index_dict(sample_dict, "a"), 1)
+        self.assertEqual(index_dict(sample_dict, "b"), 2)
+
+    def test_index_dict_with_missing_key(self):
+        sample_dict = {"a": 1}
+        self.assertIsNone(index_dict(sample_dict, "missing"))
+
+    def test_index_dict_with_none_dict(self):
+        self.assertIsNone(index_dict(None, "anykey"))
+
+    def test_index_dict_with_non_dict_input(self):
+        self.assertIsNone(index_dict("string", "key"))
+        self.assertIsNone(index_dict(123, "key"))
+        self.assertIsNone(index_dict([], "key"))
+
+    def test_index_dict_with_key_none(self):
+        sample_dict = {"a": 1, None: "none_value"}
+        self.assertEqual(index_dict(sample_dict, None), "none_value")
+

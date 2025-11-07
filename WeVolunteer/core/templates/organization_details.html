@@ -1,0 +1,144 @@
+{% extends 'nav_footer.html' %}
+{% load enum_tags %}
+{% block inner_body %}
+<div class="flex-grow-1 bg-body-secondary justify-content-center py-5">
+
+    {# org details card #}
+    <div class="flex-grow-0 flex-shrink-0 container">
+        <div class="row justify-content-md-center">
+            <div class="col col-md-10 col-lg-8">
+                <div class="card rounded-4 shadow-sm">
+                    <div class="card-body mx-2 mx-md-4 my-3">
+                        <h2 class="card-title text-center logo-font fw-bold">
+                            <i class="bi bi-people-fill"></i>
+                            {{ org.name }}
+                        </h2>
+
+                        <hr>
+
+                        {# upcoming events #}
+                        <div class="card-text fst-italic py-1">
+                            <span class="pe-2"><i class="bi bi-calendar-event"></i></span>{{ upcoming_events|length }} Upcoming Event{% if upcoming_events|length != 1 %}s{% endif %}
+                        </div>
+
+                        {# website #}
+                        {% if org.website %}
+                            <div class="card-text py-1">
+                                <span class="pe-2"><i class="bi bi-link-45deg"></i></span><a href="{{ org.website }}">{{ org.website }}</a>
+                            </div>
+                        {% endif %}
+
+                        <hr class="">
+
+                        {# about #}
+                        <div class="card-text lh-lg py-1">
+                            {% if org.about %}
+                                {{ org.about }}
+                            {% else %}
+                                <span class="fst-italic">No details</span>
+                            {% endif %}
+                        </div>
+
+                        <hr>
+
+                        <div class="row align-content-between">
+                            <div class="col">
+                                <a href="{% url 'core:organizations' %}" class="card-link link-dark link-offset-1 fs-6"><i class="bi bi-arrow-return-left"></i> Organizations</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# add new event button #}
+    <div class="mt-5">
+        {% load rules %}
+        {% if user.is_authenticated %}
+            {% has_perm 'organizations.change_organization' user org as can_add_event %}
+            {% if can_add_event %}
+                <div class="row">
+                    <div class="col text-md-center">
+                        <a href="{% url 'core:event-add' %}" class="btn btn-primary fw-bold">Add New Event <i class="bi bi-calendar-plus"></i></a>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <div class="mx-4 mt-5">
+        {# upcoming events #}
+        <div class="row">
+            <h4>
+                Upcoming Events for this Organization
+
+                <hr class="">
+            </h4>
+
+        </div>
+
+        {% if upcoming_events %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4">
+                {% for event in upcoming_events %}
+                    <div class="col mb-3">
+                        {% include "partials/event_card.html#event-card" %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="row">
+                <h6 class="fst-italic">No upcoming events for this organization</h6>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="mx-4 mt-5">
+        {# past events #}
+        <div class="row">
+            <h4>
+                Past Events for this Organization
+
+                <hr class="">
+            </h4>
+        </div>
+
+        {% if past_events %}
+            <div id="appended-past-events"
+                 class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4"
+                 data-signals-past_events_shown="{{ past_events_shown }}"
+                 data-signals-past_events_count="{{ past_events_count }}">
+                {% with past_events as event_list %}
+                    {% include "partials/event_list.html#event-list" %}
+                {% endwith %}
+            </div>
+
+            <div data-signals-more_events="{% if past_events|length == 0 %}false{% else %}true{% endif %}" id="load-more-events-div" class="row mx-4 my-5">
+                <span data-show="$more_events" class="text-center">
+                    <button data-on-click="@get('{% url "core:get-next-past-events" org.id %}') && ($past_events_error = false)"
+                            data-indicator-_fetching_events
+                            data-attr-disabled="$_fetching_events"
+                            class="btn btn-primary fw-semibold">
+
+                        <span data-show="!$_fetching_events">Load More</span>
+                        <span data-show="$_fetching_events">Loading....</span>
+                    </button>
+                </span>
+
+                <span data-show="!$more_events && !$past_events_error" class="text-center fst-italic">
+                    There are no more past events!
+                </span>
+            </div>
+            <div data-show="$past_events_error" class="row mb-4">
+                <span class="text-center text-danger fst-italic">
+                    There was an error fetching more past events. Please refresh or try again later.
+                </span>
+            </div>
+        {% else %}
+            <div class="row">
+                <h6 class="fst-italic">No past events for this organization</h6>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock inner_body %}

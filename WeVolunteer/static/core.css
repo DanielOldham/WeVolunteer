@@ -15,6 +15,8 @@
     --wv-green: #91F38C;
     --wv-green-dark: #55D743;
 
+    /*--wv-orange: #E1B189;*/
+
     --bs-body-font-family: 'Roboto', Arial, sans-serif;
 }
 
@@ -52,6 +54,10 @@
 /* border */
 .border-primary {
     border-color: var(--primary-blue) !important;
+}
+
+.border-wv-green {
+    border-color: var(--wv-green) !important;
 }
 
 /* ----------------- Additional Styling ----------------- */

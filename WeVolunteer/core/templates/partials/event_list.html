@@ -1,0 +1,8 @@
+{% load partials %}
+{% partialdef event-list %}
+    {% for event in event_list %}
+        <div class="col mb-3">
+            {% include "partials/event_card.html#event-card" %}
+        </div>
+    {% endfor %}
+{% endpartialdef %}
