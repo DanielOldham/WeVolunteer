@@ -12,16 +12,22 @@ from core.models import Event, Organization, OrganizationAdministrator
 from core.views import (
     get_events_by_month_and_year,
     about,
-    get_next_month_events_as_sse,
+    events_get_next_month_events_as_sse,
     event_details,
     event_add,
-    event_edit,
+    event_edit, organization_details_get_next_past_events_as_sse, organization_details,
 )
 from datastar_py.consts import ElementPatchMode
 
-class ViewsTests(TestCase):
+class MiscViewsTests(TestCase):
+    def test_about_view_renders(self):
+        response = about(RequestFactory().get("/about/"))
+        self.assertEqual(response.status_code, 200)
+
+
+class EventViewsTests(TestCase):
     """
-    Test class for the core module views.
+    Test class for the Event related core views.
     """
 
     def setUp(self):
@@ -53,10 +59,6 @@ class ViewsTests(TestCase):
         qs = get_events_by_month_and_year(month_year)
         self.assertEqual(list(qs.values_list("title", flat=True)), ["Oct Event"])
 
-    def test_about_view_renders(self):
-        response = about(RequestFactory().get("/about/"))
-        self.assertEqual(response.status_code, 200)
-
     def test_events_view_renders_and_monthly_events(self):
         client = Client()
         response = client.get("")
@@ -74,7 +76,7 @@ class ViewsTests(TestCase):
         request = RequestFactory().get("events/get_next_month", {"datastar": json.dumps(req_dict)})
 
         # respond_via_sse should be called when there are events
-        response = get_next_month_events_as_sse(request)
+        response = events_get_next_month_events_as_sse(request)
         called_args, called_kwargs = mock_respond_via_sse.call_args
         next_date = today + relativedelta(months=+1)
 
@@ -95,7 +97,7 @@ class ViewsTests(TestCase):
         no_event_req = RequestFactory().get("events/get_next_month", {"datastar": json.dumps(req_dict)})
 
         # no more events triggers patch_signals_respond_via_sse
-        result = get_next_month_events_as_sse(no_event_req)
+        result = events_get_next_month_events_as_sse(no_event_req)
         self.assertEqual(result, patch_msg)
         called_args, called_kwargs = mock_patch_signals.call_args
         self.assertEqual(called_args[0]['more_events'], False)
@@ -107,7 +109,7 @@ class ViewsTests(TestCase):
 
         # missing datastar triggers patch_signals_respond_via_sse
         bad_req = RequestFactory().get("events/get_next_month")
-        result = get_next_month_events_as_sse(bad_req)
+        result = events_get_next_month_events_as_sse(bad_req)
         self.assertEqual(result, patch_msg)
         mock_patch_signals.assert_called()
         called_args, called_kwargs = mock_patch_signals.call_args
@@ -198,3 +200,105 @@ class ViewsTests(TestCase):
                 response = event_edit(request, event_id=event.id)
                 self.assertTrue(mock_form.save.called)
                 self.assertEqual(response, "edit redirect")
+
+class OrganizationViewsTests(TestCase):
+    """
+    Test class for the Organization related core views.
+    """
+    def setUp(self):
+        self.org = Organization.objects.create(name="Test Org")
+
+        # create 2 upcoming events and 4 past events
+        today = timezone.now().date()
+        Event.objects.create(title="Upcoming 1", organization=self.org, date=today, start_time="10:00", end_time="11:00")
+        Event.objects.create(title="Upcoming 2", organization=self.org, date=today, start_time="12:00", end_time="13:00")
+        for i in range(4):
+            Event.objects.create(title=f"Past {i}", organization=self.org, date=today.replace(day=1), start_time="09:00", end_time="10:00")
+
+    def test_organizations_view_renders_and_context(self):
+        response = Client().get("/organizations/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("org_list", response.context)
+        self.assertIn("org_event_counts", response.context)
+        self.assertIn(self.org, response.context["org_list"])
+        self.assertEqual(
+            response.context["org_event_counts"][self.org.id],
+            2  # only 2 upcoming events count
+        )
+
+    def test_organization_details_view_success(self):
+        response = Client().get(f"/organizations/{self.org.id}")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["org"], self.org)
+        self.assertEqual(len(list(response.context["upcoming_events"])), 2)
+        self.assertEqual(len(list(response.context["past_events"])), 3)  # max 3 past events shown
+        self.assertEqual(response.context["past_events_count"], 3)
+        self.assertEqual(len(response.context["past_events_shown"]), 3)
+
+    def test_organization_details_view_404(self):
+        request = RequestFactory().get("/organizations/9999")
+        with self.assertRaises(Http404):
+            organization_details(request, 9999)
+
+    @patch("core.views.render")
+    @patch("core.views.respond_via_sse")
+    def test_organization_details_get_next_past_events_as_sse_success(self, mock_respond_sse, mock_render):
+        mock_respond_sse.return_value = "sse_response"
+        past_events_count = 2
+        past_events_shown = []
+
+        qdict = {
+            "past_events_count": past_events_count,
+            "past_events_shown": past_events_shown
+        }
+        request = RequestFactory().get(f"/organizations/{self.org.id}/next_past_events", {"datastar": json.dumps(qdict)})
+
+        response = organization_details_get_next_past_events_as_sse(request, self.org.id)
+
+        self.assertEqual(response, "sse_response")
+        mock_render.assert_called_once()
+        mock_respond_sse.assert_called_once()
+
+        called_args, called_kwargs = mock_respond_sse.call_args
+        self.assertIn("signals", called_kwargs)
+        self.assertIn("past_events_shown", called_kwargs["signals"])
+        self.assertIn("selector", called_kwargs)
+        self.assertEqual(called_kwargs["patch_mode"], ElementPatchMode.APPEND)
+
+    @patch("core.views.render")
+    @patch("core.views.respond_via_sse")
+    def test_organization_details_get_next_past_events_as_sse_sends_more_events_false(self, mock_respond_sse, mock_render):
+        mock_respond_sse.return_value = "sse_response"
+        past_events_count = 2
+        past_events_shown = list(Event.objects.filter(organization=self.org, date__lt=timezone.now().date()).values_list("pk", flat=True))
+
+        qdict = {
+            "past_events_count": past_events_count,
+            "past_events_shown": past_events_shown
+        }
+        request = RequestFactory().get(f"/organizations/{self.org.id}/next_past_events",
+                                       {"datastar": json.dumps(qdict)})
+
+        response = organization_details_get_next_past_events_as_sse(request, self.org.id)
+        self.assertEqual(response, "sse_response")
+
+        called_args, called_kwargs = mock_respond_sse.call_args
+        # more_events signal should be set to false
+        self.assertFalse(called_kwargs["signals"]["more_events"])
+
+    @patch("core.views.patch_signals_respond_via_sse")
+    def test_organization_details_get_next_past_events_as_sse_no_org(self, mock_patch_signals):
+        mock_patch_signals.return_value = "patch_called"
+        request = RequestFactory().get("/organizations/9999/next_past_events", {"datastar": "{}"})
+        with self.assertRaises(Http404):
+            organization_details_get_next_past_events_as_sse(request, 9999)
+
+    @patch("core.views.patch_signals_respond_via_sse")
+    def test_organization_details_get_next_past_events_as_sse_bad_datastar(self, mock_patch_signals):
+        mock_patch_signals.return_value = "patch_called"
+        request = RequestFactory().get(f"/organizations/{self.org.id}/next_past_events")
+        response = organization_details_get_next_past_events_as_sse(request, self.org.id)
+        self.assertEqual(response, "patch_called")
+        mock_patch_signals.assert_called_once()
+        args, kwargs = mock_patch_signals.call_args
+        self.assertTrue(args[0].get("past_events_error"))

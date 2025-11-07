@@ -47,7 +47,9 @@
 
         {# org name #}
         <div class="card-text py-1 text-truncate fw-semibold">
-            <span class="pe-2"><i class="bi bi-people"></i></span>{{ event.organization.name }}
+            <a href="{% url 'core:org-details' event.organization.id %}" class="link-dark link-offset-1">
+                <span class="pe-2"><i class="bi bi-people"></i></span>{{ event.organization.name }}
+            </a>
         </div>
 
         {% if request.user.is_authenticated and event.primary_contact %}

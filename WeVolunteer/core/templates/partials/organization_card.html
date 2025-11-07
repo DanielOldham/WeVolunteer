@@ -4,7 +4,7 @@
     <div class="card-body">
         {# name #}
         <h5 class="card-title logo-font fw-semibold">
-            <a href="#" class="link-dark link-offset-1">
+            <a href="{% url 'core:org-details' org.id %}" class="link-dark link-offset-1">
                 {{ org.name }}
             </a>
         </h5>
@@ -24,7 +24,7 @@
         <hr class="">
 
         {# about #}
-        <div class="card-text py-1 text-truncate-3">
+        <div class="card-text py-1 lh-lg text-truncate-3">
             {% if org.about %}
                 {{ org.about }}
             {% else %}

@@ -10,11 +10,7 @@
             </div>
             {% if event_list %}
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4">
-                    {% for event in event_list %}
-                        <div class="col mb-3">
-                            {% include "partials/event_card.html#event-card" %}
-                        </div>
-                    {% endfor %}
+                    {% include "partials/event_list.html#event-list" %}
                 </div>
             {% else %}
                 <div class="row">
