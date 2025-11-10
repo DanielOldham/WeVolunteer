@@ -284,5 +284,5 @@ def organization_edit(request, org_id: int):
         "form": form,
         "action": "Edit",
     }
-    return render(request, "organization_form.html", context)
+    return render(request, "organization_form.html", context=context)
 

@@ -15,7 +15,7 @@ from core.views import (
     events_get_next_month_events_as_sse,
     event_details,
     event_add,
-    event_edit, organization_details_get_next_past_events_as_sse, organization_details,
+    event_edit, organization_details_get_next_past_events_as_sse, organization_details, organization_edit,
 )
 from datastar_py.consts import ElementPatchMode
 
@@ -129,16 +129,12 @@ class EventViewsTests(TestCase):
             event_details(request, 9999)
 
     @patch("core.views.render")
-    @patch("core.views.login_required", lambda x=None, **kwargs: (lambda y: y))
-    @patch("core.views.permission_required", lambda *a, **kw: (lambda y: y))
     def test_event_add_get(self, mock_render):
         request = RequestFactory().get("/events/add")
         request.user = self.user
         event_add(request)
         mock_render.assert_called()
 
-    @patch("core.views.login_required", lambda x=None, **kwargs: (lambda y: y))
-    @patch("core.views.permission_required", lambda *a, **kw: (lambda y: y))
     def test_event_add_post_valid(self):
         post_data = {
             "title": "New Event",
@@ -158,8 +154,6 @@ class EventViewsTests(TestCase):
                 self.assertEqual(result, "redirect success")
 
     @patch("core.views.render")
-    @patch("core.views.login_required", lambda x=None, **kwargs: (lambda y: y))
-    @patch("core.views.permission_required", lambda *a, **kw: (lambda y: y))
     def test_event_edit_get(self, mock_render):
         event = Event.objects.first()
         request = RequestFactory().get(f"/events/edit/{event.id}")
@@ -179,8 +173,6 @@ class EventViewsTests(TestCase):
         with self.assertRaises(Http404):
             event_edit(request, event_id=event_id)
 
-    @patch("core.views.login_required", lambda x=None, **kwargs: (lambda y: y))
-    @patch("core.views.permission_required", lambda *a, **kw: (lambda y: y))
     def test_event_edit_post_valid(self):
         event = Event.objects.first()
         post_data = {
@@ -207,6 +199,8 @@ class OrganizationViewsTests(TestCase):
     """
     def setUp(self):
         self.org = Organization.objects.create(name="Test Org")
+        self.user = User.objects.create_user(username="admin", password="password")
+        OrganizationAdministrator.objects.create(user=self.user, organization=self.org)
 
         # create 2 upcoming events and 4 past events
         today = timezone.now().date()
@@ -302,3 +296,57 @@ class OrganizationViewsTests(TestCase):
         mock_patch_signals.assert_called_once()
         args, kwargs = mock_patch_signals.call_args
         self.assertTrue(args[0].get("past_events_error"))
+
+    @patch("core.views.render")
+    def test_organization_edit_get(self, mock_render):
+        request = RequestFactory().get(f"/organizations/edit/{self.org.id}")
+        request.user = self.user
+
+        with patch("core.views.OrganizationForm") as mock_form:
+            organization_edit(request, org_id=self.org.id)
+            mock_form.assert_called_with(instance=self.org)
+
+        args, kwargs = mock_render.call_args
+        mock_render.assert_called_once()
+        self.assertIn("form", kwargs["context"])
+        self.assertEqual(kwargs["context"]["action"], "Edit")
+
+    def test_organization_edit_not_found(self):
+        request = RequestFactory().get("/organizations/edit/9999")
+        request.user = self.user
+        with self.assertRaises(Http404):
+            organization_edit(request, org_id=9999)
+
+    def test_organization_edit_post_valid(self):
+        post_data = {"name": "New Org Name", "about": "New about"}
+        request = RequestFactory().post(f"/organizations/edit/{self.org.id}", post_data)
+        request.user = self.user
+
+        with patch("core.views.OrganizationForm") as mock_org_form:
+            mock_form = mock_org_form.return_value
+            mock_form.is_valid.return_value = True
+            mock_form.save.return_value = None
+            with patch("core.views.redirect", return_value="redirected") as mock_redirect:
+                response = organization_edit(request, org_id=self.org.id)
+                mock_org_form.assert_called_with(request.POST, instance=self.org)
+                self.assertTrue(mock_form.is_valid.called)
+                self.assertTrue(mock_form.save.called)
+                mock_redirect.assert_called_with("core:org-details", self.org.id)
+                self.assertEqual(response, "redirected")
+
+    # def test_organization_edit_post_invalid(self):
+    #     post_data = {"name": "Duplicate Name", "about": "about"}
+    #     request = RequestFactory().post(f"/organizations/edit/{self.org.id}", post_data)
+    #     request.user = self.user
+    #
+    #     with patch("core.views.OrganizationForm") as mock_org_form:
+    #         mock_form = mock_org_form.return_value
+    #         mock_form.is_valid.return_value = False
+    #         with patch("core.views.render") as mock_render:
+    #             organization_edit(request, org_id=self.org.id)
+    #             mock_org_form.assert_called_with(request.POST, instance=self.org)
+    #             self.assertFalse(mock_form.save.called)
+    #             mock_render.assert_called_once()
+    #             args, kwargs = mock_render.call_args
+    #             self.assertIn("form", kwargs["context"])
+    #             self.assertEqual(kwargs["context"]["action"], "Edit")
