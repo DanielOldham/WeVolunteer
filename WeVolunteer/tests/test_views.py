@@ -334,19 +334,19 @@ class OrganizationViewsTests(TestCase):
                 mock_redirect.assert_called_with("core:org-details", self.org.id)
                 self.assertEqual(response, "redirected")
 
-    # def test_organization_edit_post_invalid(self):
-    #     post_data = {"name": "Duplicate Name", "about": "about"}
-    #     request = RequestFactory().post(f"/organizations/edit/{self.org.id}", post_data)
-    #     request.user = self.user
-    #
-    #     with patch("core.views.OrganizationForm") as mock_org_form:
-    #         mock_form = mock_org_form.return_value
-    #         mock_form.is_valid.return_value = False
-    #         with patch("core.views.render") as mock_render:
-    #             organization_edit(request, org_id=self.org.id)
-    #             mock_org_form.assert_called_with(request.POST, instance=self.org)
-    #             self.assertFalse(mock_form.save.called)
-    #             mock_render.assert_called_once()
-    #             args, kwargs = mock_render.call_args
-    #             self.assertIn("form", kwargs["context"])
-    #             self.assertEqual(kwargs["context"]["action"], "Edit")
+    def test_organization_edit_post_invalid(self):
+        post_data = {"name": "Duplicate Name", "about": "about"}
+        request = RequestFactory().post(f"/organizations/edit/{self.org.id}", post_data)
+        request.user = self.user
+
+        with patch("core.views.OrganizationForm") as mock_org_form:
+            mock_form = mock_org_form.return_value
+            mock_form.is_valid.return_value = False
+            with patch("core.views.render") as mock_render:
+                organization_edit(request, org_id=self.org.id)
+                mock_org_form.assert_called_with(request.POST, instance=self.org)
+                self.assertFalse(mock_form.save.called)
+                mock_render.assert_called_once()
+                args, kwargs = mock_render.call_args
+                self.assertIn("form", kwargs["context"])
+                self.assertEqual(kwargs["context"]["action"], "Edit")
