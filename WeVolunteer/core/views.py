@@ -10,7 +10,7 @@ from django.utils import timezone
 from rules.contrib.views import permission_required, objectgetter
 
 from WeVolunteer.utils import respond_via_sse, patch_signals_respond_via_sse
-from core.forms import EventForm
+from core.forms import EventForm, OrganizationForm
 from core.models import Event, EventDescriptors, EventLocationDescriptors, Organization
 
 
@@ -261,3 +261,28 @@ def organization_details_get_next_past_events_as_sse(request, org_id):
         selector='#appended-past-events',
         patch_mode=ElementPatchMode.APPEND
     )
+
+@login_required()
+@permission_required("organizations.change_organization", fn=objectgetter(Organization, "org_id"), raise_exception=True)
+def organization_edit(request, org_id: int):
+    """
+    Django view.
+    Display and handle submission of the form for an existing Organization.
+    """
+
+    org = Organization.objects.filter(id=org_id).first()
+
+    if request.method == "POST":
+        form = OrganizationForm(request.POST, instance=org)
+        if form.is_valid():
+            form.save()
+            return redirect("core:org-details", org.id)
+    else:
+        form = OrganizationForm(instance=org)
+
+    context = {
+        "form": form,
+        "action": "Edit",
+    }
+    return render(request, "organization_form.html", context)
+

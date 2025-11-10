@@ -88,7 +88,7 @@
                         <hr class="">
 
                         {# description #}
-                        <div class="card-text py-1 text-truncate-3">
+                        <div class="card-text py-1 lh-lg text-truncate-3">
                             {% if event.description %}
                                 {{ event.description }}
                             {% else %}
@@ -108,7 +108,7 @@
                                 {% has_perm 'events.change_event' user event as can_edit_event %}
                                 {% if can_edit_event %}
                                     <div class="col text-end">
-                                        <a href="{% url 'core:event-edit' event.id %}" class="card-link link-dark">Edit this Event <i class="bi bi-pencil-square"></i></a>
+                                        <a href="{% url 'core:event-edit' event.id %}" class="btn btn-primary fw-bold">Edit Event <i class="bi bi-pencil-square"></i></a>
                                     </div>
                                 {% endif %}
                             {% endif %}

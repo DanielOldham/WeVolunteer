@@ -116,3 +116,40 @@ class EventForm(forms.ModelForm):
         self.fields["event_descriptor_tags"].widget.attrs["data-bind"] = "event_descriptor_tags"
         self.fields["location_descriptor_tags"].widget.attrs["data-bind"] = "location_descriptor_tags"
         self.fields["description"].widget.attrs["style"] = "height: 130px"
+
+
+class OrganizationForm(forms.ModelForm):
+    """
+    Django ModelForm for adding or editing an Organization.
+    """
+
+    class Meta:
+        model = Organization
+        fields = "__all__"
+
+    def clean(self):
+        """
+        Form level clean method.
+        """
+
+        if self.errors:
+            add_invalid_class_to_form_error_fields(self)
+
+    def clean_name(self):
+        """
+        Clean method for the title field.
+        """
+
+        name = self.cleaned_data["name"]
+        if Organization.objects.filter(name=name).exclude(id=self.instance.id).exists():
+            raise ValidationError("An organization with this name already exists; organization name must be unique")
+        return name
+
+    def __init__(self, *args, **kwargs):
+        super(OrganizationForm, self).__init__(*args, **kwargs)
+        self.label_suffix = ""
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+            visible.field.widget.attrs['placeholder'] = 'placeholder'
+
+        self.fields["about"].widget.attrs["style"] = "height: 200px"

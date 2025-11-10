@@ -14,4 +14,5 @@ urlpatterns = [
     path('organizations/', views.organizations, name='organizations'),
     path('organizations/<org_id>', views.organization_details, name='org-details'),
     path('organizations/get_next_past_events/<org_id>', views.organization_details_get_next_past_events_as_sse, name='get-next-past-events'),
+    path('organizations/edit/<org_id>', views.organization_edit, name='org-edit'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,0 +1,73 @@
+{% extends 'nav_footer.html' %}
+{% block inner_body %}
+<div class="flex-grow-1 bg-body-secondary d-flex flex-column justify-content-center py-5">
+    <div class="flex-grow-0 flex-shrink-0 container">
+        <div class="row justify-content-md-center">
+            <div class="col col-lg-8">
+                <div class="card rounded-4">
+                    <div class="card-body mx-2 mx-md-5 my-3">
+                        <h2 class="card-title text-center fw-bold logo-font pb-2">{{ action }} Organization</h2>
+
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="text-danger fs-7">
+                                {{ form.non_field_errors }}
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                {{ form.name }}
+                                {{ form.name.label_tag }}
+
+                                {% for error in form.name.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                {{ form.website }}
+                                {{ form.website.label_tag }}
+
+                                {% for error in form.website.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                {{ form.about }}
+                                {{ form.about.label_tag }}
+
+                                {% for error in form.about.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="row align-content-between">
+                                <div class="col">
+                                    <a href="
+                                        {% if form.instance.pk %}
+                                            {% url 'core:org-details' form.instance.pk %}
+                                        {% else %}
+                                             {% url 'core:organizations' %}
+                                        {% endif %}" class="link-dark link-offset-1 fw-bold">
+                                        <i class="bi bi-arrow-return-left"></i> Cancel
+                                    </a>
+                                </div>
+
+                                <div class="col text-end">
+                                    <button type="submit" class="btn btn-primary fw-bold">Submit <i class="bi bi-check2"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock inner_body %}

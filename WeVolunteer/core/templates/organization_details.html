@@ -45,6 +45,16 @@
                             <div class="col">
                                 <a href="{% url 'core:organizations' %}" class="card-link link-dark link-offset-1 fs-6"><i class="bi bi-arrow-return-left"></i> Organizations</a>
                             </div>
+
+                            {% load rules %}
+                            {% if user.is_authenticated %}
+                                {% has_perm 'organizations.change_organization' user org as can_edit_org %}
+                                {% if can_edit_org %}
+                                    <div class="col text-end">
+                                        <a href="{% url 'core:org-edit' org.id %}" class="btn btn-primary fw-bold">Edit Organization <i class="bi bi-pencil-square"></i></a>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -59,7 +69,7 @@
             {% has_perm 'organizations.change_organization' user org as can_add_event %}
             {% if can_add_event %}
                 <div class="row">
-                    <div class="col text-md-center">
+                    <div class="col text-center">
                         <a href="{% url 'core:event-add' %}" class="btn btn-primary fw-bold">Add New Event <i class="bi bi-calendar-plus"></i></a>
                     </div>
                 </div>
