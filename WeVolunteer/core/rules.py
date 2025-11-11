@@ -44,3 +44,4 @@ def is_organization_admin_for_organization_contact(user: User, org_contact: Orga
         """
     return OrganizationAdministrator.objects.filter(user=user, organization=org_contact.organization).exists()
 rules.add_perm('organizationcontacts.change_organizationcontact', is_organization_admin_for_organization_contact)
+rules.add_perm('organizationcontacts.delete_organizationcontact', is_organization_admin_for_organization_contact)

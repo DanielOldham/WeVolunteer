@@ -18,4 +18,5 @@ urlpatterns = [
     path('organizations/edit/<org_id>', views.organization_edit, name='org-edit'),
     path('organization_contacts/add', views.organization_contact_add, name='org-contact-add'),
     path('organization_contacts/edit/<org_contact_id>', views.organization_contact_edit, name='org-contact-edit'),
+    path('organization_contacts/delete/<org_contact_id>', views.organization_contact_delete, name='org-contact-delete'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

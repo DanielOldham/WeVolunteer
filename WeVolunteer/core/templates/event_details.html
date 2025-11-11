@@ -84,11 +84,28 @@
                             </div>
                             {% endif %}
 
+                            {# edit/delete contact #}
                             {% load rules %}
-                            {% has_perm 'organizations.change_organization' user event.organization as can_edit_org %}
-                                {% if can_edit_org %}
-                                    <span class="pe-2"><i class="bi bi-person-lines-fill"></i></span><a href="{% url 'core:org-contact-edit' event.primary_contact.id %}" class="btn btn-sm btn-primary">Edit This Contact</a>
-                                {% endif %}
+                            {% has_perm 'organizationcontacts.change_organizationcontact' user event.primary_contact as can_edit_org_contact %}
+                            {% has_perm 'organizationcontacts.delete_organizationcontact' user event.primary_contact as can_delete_org_contact %}
+                            {% if can_delete_org_contact %}
+                                <form method="POST" action="{% url 'core:org-contact-delete' event.primary_contact.id %}">
+                                    {% csrf_token %}
+
+                                    <span class="pe-2"><i class="bi bi-person-lines-fill"></i></span>
+                                    <div class="btn-group" role="group" aria-label="Organization contact actions">
+                                        <button onclick="return confirm('Are you absolutely sure you want to delete this Organization Contact? ({{ event.primary_contact.name }})\nIt will be removed from {{ contact_event_count }} events.\n\nThis action CANNOT be undone.')"
+                                                type="submit" class="btn btn-danger btn-sm fw-bold">
+                                            Delete this Contact <i class="bi bi-trash"></i>
+                                        </button>
+                                        {% if can_edit_org_contact %}
+                                            <a href="{% url 'core:org-contact-edit' event.primary_contact.id %}" class="btn btn-sm btn-primary">Edit This Contact <i class="bi bi-pencil-square"></i></a>
+                                        {% endif %}
+                                    </div>
+                                </form>
+                            {% elif can_edit_org_contact %}
+                                <span class="pe-2"><i class="bi bi-person-lines-fill"></i></span><a href="{% url 'core:org-contact-edit' event.primary_contact.id %}" class="btn btn-sm btn-primary">Edit This Contact</a>
+                            {% endif %}
                         {% endif %}
 
                         <hr class="">
@@ -98,7 +115,7 @@
                             {% if event.description %}
                                 {{ event.description }}
                             {% else %}
-                                <span class="fst-italic">No details</span>
+                                <span class="fst-italic">No description</span>
                             {% endif %}
                         </div>
 
@@ -118,11 +135,13 @@
                                         <form method="POST" action="{% url 'core:event-delete' event.id %}">
                                             {% csrf_token %}
                                             <div class="btn-group" role="group" aria-label="Event actions">
-                                            <button onclick="return confirm('Are you absolutely sure you want to delete this Event?\n({{ event.title }})\nThis action CANNOT be undone.')"
-                                                    type="submit" class="btn btn-danger fw-bold">Delete <i class="bi bi-trash"></i></button>
-                                            {% if can_edit_event %}
-                                                <a href="{% url 'core:event-edit' event.id %}" class="btn btn-primary fw-bold">Edit <i class="bi bi-pencil-square"></i></a>
-                                            {% endif %}
+                                                <button onclick="return confirm('Are you absolutely sure you want to delete this Event?\n({{ event.title }})\nThis action CANNOT be undone.')"
+                                                        type="submit" class="btn btn-danger fw-bold">
+                                                    Delete <i class="bi bi-trash"></i>
+                                                </button>
+                                                {% if can_edit_event %}
+                                                    <a href="{% url 'core:event-edit' event.id %}" class="btn btn-primary fw-bold">Edit <i class="bi bi-pencil-square"></i></a>
+                                                {% endif %}
                                             </div>
                                         </form>
                                     {% elif can_edit_event %}

@@ -120,7 +120,10 @@ def event_details(request, event_id):
 
     event = Event.objects.filter(id=event_id).first()
     if event:
-        return render(request, "event_details.html", {"event": event})
+        context = {"event": event}
+        if event.primary_contact:
+            context["contact_event_count"] = len(Event.objects.filter(primary_contact=event.primary_contact))
+        return render(request, "event_details.html", context)
     else:
         raise Http404("Event does not exist")
 
@@ -181,8 +184,12 @@ def event_edit(request, event_id: int):
 @login_required()
 @permission_required("events.delete_event", fn=objectgetter(Event, "event_id"), raise_exception=True)
 def event_delete(request, event_id: int):
+    """
+    Django view.
+    Handle deletion of an Event.
+    """
     if request.method != "POST":
-        raise BadRequest("Only POST requests are allowed")
+        raise BadRequest("Only POST requests are allowed to delete an Event.")
 
     event = Event.objects.filter(id=event_id).first()
     org_id = event.organization.id
@@ -350,3 +357,19 @@ def organization_contact_edit(request, org_contact_id: int):
         'contact_event_count': contact_event_count,
     }
     return render(request, "organization_contact_form.html", context)
+
+
+@login_required()
+@permission_required("organizationcontacts.delete_organizationcontact", fn=objectgetter(OrganizationContact, "org_contact_id"), raise_exception=True)
+def organization_contact_delete(request, org_contact_id: int):
+    """
+    Django view.
+    Handle deletion of an existing OrganizationContact.
+    """
+    if request.method != "POST":
+        raise BadRequest("Only POST requests are allowed to delete an OrganizationContact.")
+
+    contact = OrganizationContact.objects.filter(id=org_contact_id).first()
+    org_id = contact.organization.id
+    contact.delete()
+    return redirect("core:org-details", org_id)
