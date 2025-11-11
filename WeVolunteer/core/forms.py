@@ -153,3 +153,53 @@ class OrganizationForm(forms.ModelForm):
             visible.field.widget.attrs['placeholder'] = 'placeholder'
 
         self.fields["about"].widget.attrs["style"] = "height: 200px"
+
+
+class OrganizationContactForm(forms.ModelForm):
+    """
+    Django ModelForm for adding or editing an OrganizationContact.
+    """
+    email = forms.EmailField(required=False)
+
+    class Meta:
+        model = OrganizationContact
+        fields = "__all__"
+
+    def clean(self):
+        """
+        Form level clean method.
+        """
+
+        if self.errors:
+            add_invalid_class_to_form_error_fields(self)
+
+    def clean_organization(self):
+        """
+        Clean method for the organization field.
+        """
+        if self.instance and self.instance.pk is not None:
+            if "organization" in self.changed_data:
+                raise ValidationError("Cannot edit the Organization for an Organization Contact")
+
+        organization = self.cleaned_data["organization"]
+        return organization
+
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(OrganizationContactForm, self).__init__(*args, **kwargs)
+
+        # if user is org admin, set possible organizations to their org
+        if user is not None:
+            admins = OrganizationAdministrator.objects.filter(user=user)
+            if admins.exists():
+                organization = admins.first().organization
+                self.fields["organization"].queryset = Organization.objects.filter(id=organization.id)
+
+        self.label_suffix = ""
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+            visible.field.widget.attrs['placeholder'] = 'placeholder'
+
+        self.fields["organization"].widget.attrs["class"] = "form-select"
+        self.fields["organization"].empty_label = None

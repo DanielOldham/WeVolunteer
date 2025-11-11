@@ -6,12 +6,23 @@
             <div class="col col-lg-8">
                 <div class="card rounded-4">
                     <div class="card-body mx-2 mx-md-5 my-3">
-                        <h2 class="card-title text-center fw-bold logo-font pb-4">{{ action }} Organization</h2>
+                        <h2 class="card-title text-center fw-bold logo-font pb-4">{{ action }} Organization Contact</h2>
 
                         <form method="POST">
                             {% csrf_token %}
                             <div class="text-danger fs-7">
                                 {{ form.non_field_errors }}
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                {{ form.organization }}
+                                {{ form.organization.label_tag }}
+
+                                {% for error in form.organization.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
                             </div>
 
                             <div class="form-floating mb-3">
@@ -26,10 +37,10 @@
                             </div>
 
                             <div class="form-floating mb-3">
-                                {{ form.website }}
-                                {{ form.website.label_tag }}
+                                {{ form.email }}
+                                {{ form.email.label_tag }}
 
-                                {% for error in form.website.errors %}
+                                {% for error in form.email.errors %}
                                 <div class="invalid-feedback">
                                     {{ error }}
                                 </div>
@@ -37,15 +48,36 @@
                             </div>
 
                             <div class="form-floating mb-3">
-                                {{ form.about }}
-                                {{ form.about.label_tag }}
+                                {{ form.phone }}
+                                {{ form.phone.label_tag }}
 
-                                {% for error in form.about.errors %}
+                                {% for error in form.phone.errors %}
                                 <div class="invalid-feedback">
                                     {{ error }}
                                 </div>
                                 {% endfor %}
                             </div>
+
+                            <div class="form-floating mb-3">
+                                {{ form.notes }}
+                                {{ form.notes.label_tag }}
+
+                                {% for error in form.notes.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            {% if contact_event_count > 1 %}
+                                <hr>
+                                <div class="row">
+                                    <div class="card-text fst-italic py-1">
+                                         <span class="text-warning pe-2"><i class="bi bi-exclamation-triangle-fill"></i></span>This Organization Contact is currently assigned to {{ contact_event_count }} events. Saving your changes here will apply to each of those events. If this isn't your intent, you can <a href="{% url 'core:org-contact-add' %}" class="link-dark">create a new contact</a>.
+                                    </div>
+                                </div>
+                                <hr>
+                            {% endif %}
 
                             <div class="row align-content-between">
                                 <div class="col">

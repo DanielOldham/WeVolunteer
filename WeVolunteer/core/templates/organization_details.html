@@ -6,7 +6,7 @@
     {# org details card #}
     <div class="flex-grow-0 flex-shrink-0 container">
         <div class="row justify-content-md-center">
-            <div class="col col-md-10 col-lg-8">
+            <div class="col-12 col-lg-10 col-xl-8">
                 <div class="card rounded-4 shadow-sm">
                     <div class="card-body mx-2 mx-md-4 my-3">
                         <h2 class="card-title text-center logo-font fw-bold">
@@ -41,8 +41,8 @@
 
                         <hr>
 
-                        <div class="row align-content-between">
-                            <div class="col">
+                        <div class="row">
+                            <div class="col-4">
                                 <a href="{% url 'core:organizations' %}" class="card-link link-dark link-offset-1 fs-6"><i class="bi bi-arrow-return-left"></i> Organizations</a>
                             </div>
 
@@ -50,8 +50,12 @@
                             {% if user.is_authenticated %}
                                 {% has_perm 'organizations.change_organization' user org as can_edit_org %}
                                 {% if can_edit_org %}
-                                    <div class="col text-end">
-                                        <a href="{% url 'core:org-edit' org.id %}" class="btn btn-primary fw-bold">Edit Organization <i class="bi bi-pencil-square"></i></a>
+                                    <div class="col-8 text-end">
+                                        <div class="btn-group" role="group" aria-label="Organization actions">
+                                            <a href="{% url 'core:event-add' %}" class="btn btn-primary fw-bold">Create Event <i class="bi bi-calendar-plus"></i></a>
+                                            <a href="{% url 'core:org-contact-add' %}" class="btn btn-primary fw-bold">Create Contact <i class="bi bi-person-fill-add"></i></a>
+                                            <a href="{% url 'core:org-edit' org.id %}" class="btn btn-primary fw-bold">Edit <i class="bi bi-pencil-square"></i></a>
+                                        </div>
                                     </div>
                                 {% endif %}
                             {% endif %}
@@ -60,21 +64,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    {# add new event button #}
-    <div class="mt-5">
-        {% load rules %}
-        {% if user.is_authenticated %}
-            {% has_perm 'organizations.change_organization' user org as can_add_event %}
-            {% if can_add_event %}
-                <div class="row">
-                    <div class="col text-center">
-                        <a href="{% url 'core:event-add' %}" class="btn btn-primary fw-bold">Add New Event <i class="bi bi-calendar-plus"></i></a>
-                    </div>
-                </div>
-            {% endif %}
-        {% endif %}
     </div>
 
     <div class="mx-4 mt-5">

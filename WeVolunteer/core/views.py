@@ -1,17 +1,20 @@
 import json
 from datetime import datetime
 
+import django
+import django.middleware.csrf
 from datastar_py.consts import ElementPatchMode
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import BadRequest
 from django.http import Http404
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from rules.contrib.views import permission_required, objectgetter
 
 from WeVolunteer.utils import respond_via_sse, patch_signals_respond_via_sse
-from core.forms import EventForm, OrganizationForm
-from core.models import Event, EventDescriptors, EventLocationDescriptors, Organization
+from core.forms import EventForm, OrganizationForm, OrganizationContactForm
+from core.models import Event, EventDescriptors, EventLocationDescriptors, Organization, OrganizationContact
 
 
 def get_events_by_month_and_year(month_year: datetime.date):
@@ -140,7 +143,7 @@ def event_add(request):
 
     context = {
         'form': form,
-        'action': 'Add',
+        'action': 'Create',
         'event_descriptors': EventDescriptors,
         'location_descriptors': EventLocationDescriptors,
     }
@@ -173,6 +176,18 @@ def event_edit(request, event_id: int):
         'location_descriptors': EventLocationDescriptors,
     }
     return render(request, "event_form.html", context)
+
+
+@login_required()
+@permission_required("events.delete_event", fn=objectgetter(Event, "event_id"), raise_exception=True)
+def event_delete(request, event_id: int):
+    if request.method != "POST":
+        raise BadRequest("Only POST requests are allowed")
+
+    event = Event.objects.filter(id=event_id).first()
+    org_id = event.organization.id
+    event.delete()
+    return redirect('core:org-details', org_id)
 
 
 def organizations(request):
@@ -286,3 +301,52 @@ def organization_edit(request, org_id: int):
     }
     return render(request, "organization_form.html", context=context)
 
+
+@login_required()
+@permission_required("organizationcontacts.add_organizationcontact", raise_exception=True)
+def organization_contact_add(request):
+    """
+    Django view.
+    Display and handle submission of the form for a new OrganizationContact.
+    """
+
+    if request.method == "POST":
+        form = OrganizationContactForm(request.POST, user=request.user)
+        if form.is_valid():
+            org_contact = form.save()
+            return redirect('core:org-details', org_contact.organization.id)
+    else:
+        form = OrganizationContactForm(user=request.user)
+
+    context = {
+        'form': form,
+        'action': 'Create',
+    }
+    return render(request, "organization_contact_form.html", context)
+
+
+@login_required()
+@permission_required("organizationcontacts.change_organizationcontact", fn=objectgetter(OrganizationContact, "org_contact_id"), raise_exception=True)
+def organization_contact_edit(request, org_contact_id: int):
+    """
+    Django view.
+    Display and handle submission of the form for an existing OrganizationContact.
+    """
+    contact = OrganizationContact.objects.filter(id=org_contact_id).first()
+
+    if request.method == "POST":
+        form = OrganizationContactForm(request.POST, instance=contact, user=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('core:org-details', contact.organization.id)
+    else:
+        form = OrganizationContactForm(instance=contact, user=request.user)
+
+    contact_event_count = len(Event.objects.filter(primary_contact=contact))
+
+    context = {
+        'form': form,
+        'action': 'Edit',
+        'contact_event_count': contact_event_count,
+    }
+    return render(request, "organization_contact_form.html", context)

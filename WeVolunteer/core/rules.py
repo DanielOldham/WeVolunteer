@@ -1,6 +1,6 @@
 import rules
 from django.contrib.auth.models import User
-from core.models import Event, OrganizationAdministrator, Organization
+from core.models import Event, OrganizationAdministrator, Organization, OrganizationContact
 
 
 @rules.predicate
@@ -15,7 +15,7 @@ def is_organization_admin_for_event(user: User, event: Event):
     else:
         return False
 rules.add_perm('events.change_event', is_organization_admin_for_event)
-
+rules.add_perm('events.delete_event', is_organization_admin_for_event)
 
 @rules.predicate
 def is_organization_admin(user: User):
@@ -23,9 +23,9 @@ def is_organization_admin(user: User):
     Django Rules Predicate.
     Check if the given user is an organization administrator.
     """
-
     return OrganizationAdministrator.objects.filter(user=user).exists()
 rules.add_perm('events.add_event', is_organization_admin)
+rules.add_perm('organizationcontacts.add_organizationcontact', is_organization_admin)
 
 @rules.predicate
 def is_organization_admin_for_organization(user: User, organization: Organization):
@@ -33,6 +33,14 @@ def is_organization_admin_for_organization(user: User, organization: Organizatio
     Django Rules Predicate.
     Check if the given user is an organization administrator for the given organization.
     """
-
     return OrganizationAdministrator.objects.filter(user=user, organization=organization).exists()
 rules.add_perm('organizations.change_organization', is_organization_admin_for_organization)
+
+@rules.predicate
+def is_organization_admin_for_organization_contact(user: User, org_contact: OrganizationContact):
+    """
+        Django Rules Predicate.
+        Check if the given user is an organization administrator for the given organization contact.
+        """
+    return OrganizationAdministrator.objects.filter(user=user, organization=org_contact.organization).exists()
+rules.add_perm('organizationcontacts.change_organizationcontact', is_organization_admin_for_organization_contact)
