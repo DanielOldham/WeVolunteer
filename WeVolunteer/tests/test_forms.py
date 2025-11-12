@@ -10,7 +10,7 @@ from django.utils import timezone
 from core.forms import (
     add_invalid_class_to_form_error_fields,
     EventForm,
-    FirstLastNameSignupForm,
+    FirstLastNameSignupForm, OrganizationForm, OrganizationContactForm,
 )
 from core.models import Organization, OrganizationContact, OrganizationAdministrator, EventDescriptors, \
     EventLocationDescriptors
@@ -229,3 +229,154 @@ class EventFormTests(TestCase):
         self.assertEqual(form.fields["primary_contact"].widget.attrs["class"], "form-select")
         self.assertIn("placeholder", form.fields["date"].widget.attrs)
         self.assertEqual(form.fields["description"].widget.attrs["style"], "height: 130px")
+
+
+class OrganizationFormTests(TestCase):
+    """
+    Test class for the OrganizationForm class.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.org_a = Organization.objects.create(name="Org A", about="Org A description")
+        cls.org_b = Organization.objects.create(name="Org B", about="Org B description")
+
+    @staticmethod
+    def make_cleaned_data(name="Org C", about="A great org"):
+        return {
+            "name": name,
+            "about": about,
+        }
+
+    def test_clean_good_data_adds_no_errors(self):
+        data = self.make_cleaned_data()
+        form = OrganizationForm(data=data)
+        form.cleaned_data = data
+
+        with patch("core.forms.add_invalid_class_to_form_error_fields") as mock_func:
+            form.clean()
+            self.assertFalse(mock_func.called)
+        self.assertEqual(len(form.errors), 0)
+        self.assertEqual(len(form.non_field_errors()), 0)
+
+    def test_is_valid_good_data_no_errors(self):
+        data = self.make_cleaned_data()
+        form = OrganizationForm(data=data)
+        form.cleaned_data = data
+
+        with patch("core.forms.add_invalid_class_to_form_error_fields") as mock_func:
+            self.assertTrue(form.is_valid())
+            self.assertFalse(mock_func.called)
+        self.assertEqual(len(form.errors), 0)
+        self.assertEqual(len(form.non_field_errors()), 0)
+
+    def test_clean_name_duplicate_name_adds_error(self):
+        # add org with a duplicate name
+        form = OrganizationForm()
+        form.instance = self.org_a  # Simulate editing org_a
+        form.cleaned_data = {"name": "Org B", "about": "About"}
+
+        with self.assertRaises(ValidationError):
+            form.clean_name()
+
+    def test_clean_invalid_triggers_helper(self):
+        form = OrganizationForm(data={})
+        # form is empty, so errors will be present
+        form.is_valid()  # triggers validation and generates errors
+        with patch("core.forms.add_invalid_class_to_form_error_fields") as mock_func:
+            form.clean()
+            self.assertTrue(mock_func.called)
+        self.assertTrue(form.errors)
+
+    def test_widget_configuration_on_init(self):
+        form = OrganizationForm()
+        self.assertEqual(form.label_suffix, "")
+        for visible in form.visible_fields():
+            self.assertIn("form-control", visible.field.widget.attrs['class'])
+            self.assertEqual(visible.field.widget.attrs['placeholder'], "placeholder")
+        self.assertEqual(form.fields["about"].widget.attrs["style"], "height: 200px")
+
+    def test_clean_name_exact_current_instance_allows(self):
+        # editing an org with same name should not result in errors
+        form = OrganizationForm()
+        form.instance = self.org_a
+        form.cleaned_data = {"name": self.org_a.name, "about": "About"}
+        form.clean()
+        self.assertEqual(form.clean_name(), self.org_a.name)
+        self.assertFalse(form.errors)
+
+
+class OrganizationContactFormTests(TestCase):
+    """
+    Test class for the OrganizationContactForm class.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.org_a = Organization.objects.create(name="Org A")
+        cls.org_b = Organization.objects.create(name="Org B")
+        cls.admin = User.objects.create_user(username="admin")
+        OrganizationAdministrator.objects.create(user=cls.admin, organization=cls.org_a)
+
+        cls.contact = OrganizationContact.objects.create(
+            name="Contact A", email="contact@example.com", organization=cls.org_a
+        )
+
+    @staticmethod
+    def make_cleaned_data(name="New Contact", email="newcontact@example.com", organization=None):
+        return {
+            "name": name,
+            "email": email,
+            "organization": organization,
+        }
+
+    def test_clean_no_errors(self):
+        data = self.make_cleaned_data(organization=self.org_a)
+        form = OrganizationContactForm(data=data)
+        form.cleaned_data = data
+        with patch("core.forms.add_invalid_class_to_form_error_fields") as mock_func:
+            form.clean()
+            self.assertFalse(mock_func.called)
+        self.assertEqual(len(form.errors), 0)
+
+    def test_clean_triggers_add_invalid_class(self):
+        data = self.make_cleaned_data(name="", organization=self.org_a)  # name is required, empty triggers error
+        form = OrganizationContactForm(data=data)
+        form.is_valid()  # triggers errors
+        with patch("core.forms.add_invalid_class_to_form_error_fields") as mock_func:
+            form.clean()
+            self.assertTrue(mock_func.called)
+        self.assertIn("name", form.errors)
+
+    def test_clean_organization_immutable_on_existing_instance(self):
+        form = OrganizationContactForm()
+        # set existing instance to simulate editing
+        form.instance = self.contact
+        form.instance.pk = self.contact.pk
+        form.changed_data = ["organization"]
+        form.cleaned_data = {"organization": self.org_b}
+        with self.assertRaises(ValidationError):
+            form.clean_organization()
+
+    def test_clean_organization_allows_if_no_change(self):
+        form = OrganizationContactForm()
+        form.instance = self.contact
+        form.instance.pk = self.contact.pk
+        form.changed_data = []
+        form.cleaned_data = {"organization": self.org_a}
+        result = form.clean_organization()
+        self.assertEqual(result, self.org_a)
+
+    def test_init_restricts_organization_queryset_for_org_admin(self):
+        form = OrganizationContactForm(user=self.admin)
+        self.assertEqual(list(form.fields["organization"].queryset), [self.org_a])
+
+    def test_widget_attrs_set_correctly(self):
+        form = OrganizationContactForm()
+        self.assertEqual(form.label_suffix, "")
+        for visible in form.visible_fields():
+            if visible.name != "organization":
+                self.assertIn("form-control", visible.field.widget.attrs["class"])
+                self.assertEqual(visible.field.widget.attrs["placeholder"], "placeholder")
+        self.assertEqual(form.fields["organization"].widget.attrs["class"], "form-select")
+        self.assertIsNone(form.fields["organization"].empty_label)

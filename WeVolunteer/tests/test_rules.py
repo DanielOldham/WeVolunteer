@@ -1,7 +1,7 @@
 import rules
 from django.test import TestCase
 from django.contrib.auth.models import User
-from core.models import Organization, OrganizationAdministrator, Event
+from core.models import Organization, OrganizationAdministrator, Event, OrganizationContact
 from core.rules import (
     is_organization_admin_for_event,
     is_organization_admin,
@@ -9,7 +9,7 @@ from core.rules import (
 )
 
 
-class RulesPredicateTests(TestCase):
+class RulesTests(TestCase):
     """
     Test class for the Django Rules and Predicates.
     """
@@ -40,6 +40,18 @@ class RulesPredicateTests(TestCase):
             date="2025-12-26",
             start_time="09:00",
             end_time="10:00",
+        )
+
+        # Create organization contacts for both orgs
+        self.org_contact = OrganizationContact.objects.create(
+            name="Contact 1",
+            email="contact1@example.com",
+            organization=self.org,
+        )
+        self.other_org_contact = OrganizationContact.objects.create(
+            name="Contact 2",
+            email="contact2@example.com",
+            organization=self.other_org,
         )
 
     def test_is_organization_admin_for_event_true(self):
@@ -115,3 +127,45 @@ class RulesPredicateTests(TestCase):
         # false for outsider
         outsider = User.objects.create(username="not_admin")
         self.assertFalse(rules.has_perm("organizations.change_organization", outsider, self.org))
+
+    def test_is_organization_admin_for_organization_contact_true(self):
+        from core.rules import is_organization_admin_for_organization_contact
+        result = is_organization_admin_for_organization_contact(self.user, self.org_contact)
+        self.assertTrue(result)
+
+    def test_is_organization_admin_for_organization_contact_false(self):
+        from core.rules import is_organization_admin_for_organization_contact
+        result = is_organization_admin_for_organization_contact(self.user, self.other_org_contact)
+        self.assertFalse(result)
+
+    def test_organization_contact_change_delete_permissions_registered(self):
+        perms = rules.permissions.permissions
+        self.assertIn("organizationcontacts.change_organizationcontact", perms)
+        self.assertIn("organizationcontacts.delete_organizationcontact", perms)
+
+        change_rule = perms["organizationcontacts.change_organizationcontact"]
+        delete_rule = perms["organizationcontacts.delete_organizationcontact"]
+
+        from core.rules import is_organization_admin_for_organization_contact
+        self.assertIs(change_rule, is_organization_admin_for_organization_contact)
+        self.assertIs(delete_rule, is_organization_admin_for_organization_contact)
+
+    def test_organization_contact_perm_behaviors(self):
+        # Admin user for org contact can change and delete
+        can_change = rules.has_perm("organizationcontacts.change_organizationcontact", self.user, self.org_contact)
+        can_delete = rules.has_perm("organizationcontacts.delete_organizationcontact", self.user, self.org_contact)
+        self.assertTrue(can_change)
+        self.assertTrue(can_delete)
+
+        # Admin user should not have perms for other org contact
+        can_change_other = rules.has_perm("organizationcontacts.change_organizationcontact", self.user,
+                                          self.other_org_contact)
+        can_delete_other = rules.has_perm("organizationcontacts.delete_organizationcontact", self.user,
+                                          self.other_org_contact)
+        self.assertFalse(can_change_other)
+        self.assertFalse(can_delete_other)
+
+        # User with no admin rights cannot change or delete
+        outsider = User.objects.create(username="outsider")
+        self.assertFalse(rules.has_perm("organizationcontacts.change_organizationcontact", outsider, self.org_contact))
+        self.assertFalse(rules.has_perm("organizationcontacts.delete_organizationcontact", outsider, self.org_contact))

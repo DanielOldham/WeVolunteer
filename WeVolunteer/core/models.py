@@ -156,8 +156,8 @@ class Organization(models.Model):
     """
     An organization in charge of events.
     """
-    name = models.CharField(max_length=255)
-    website = models.CharField(max_length=255, null=True, blank=True)
+    name = models.CharField(max_length=255, unique=True)
+    website = models.URLField(blank=True, null=True)
     about = models.TextField(null=True, blank=True)
 
     def __str__(self):
