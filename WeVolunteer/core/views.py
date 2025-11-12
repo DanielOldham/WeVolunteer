@@ -1,8 +1,6 @@
 import json
 from datetime import datetime
 
-import django
-import django.middleware.csrf
 from datastar_py.consts import ElementPatchMode
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import login_required
