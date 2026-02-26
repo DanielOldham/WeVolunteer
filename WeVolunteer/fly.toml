@@ -4,7 +4,7 @@
 #
 
 app = 'wevolunteer-stage'
-primary_region = 'den'
+primary_region = 'sjc'
 console_command = '/code/manage.py shell'
 
 [build]
