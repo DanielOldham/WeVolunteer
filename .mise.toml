@@ -5,7 +5,7 @@ min_version = "2024.9.5"
 PROJECT_NAME = "{{ config_root | basename }}"
 
 [tools]
-python = '3.13.2'
+python = '3.14.3'
 
 [settings]
 python.uv_venv_auto = true
