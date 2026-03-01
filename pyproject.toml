@@ -15,7 +15,7 @@ dependencies = [
     "django-google-fonts>=0.0.3",
     "gunicorn>=23.0.0",
     "psycopg2-binary>=2.9.10",
-    "python-dotenv>=1.1.1",
+    "python-dotenv>=1.2.2",
     "rules>=3.5",
     "whitenoise>=6.9.0",
 ]

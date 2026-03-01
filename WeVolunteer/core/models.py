@@ -118,8 +118,9 @@ def get_time_of_day_enum_list(time_1 : datetime.time, time_2 : datetime.time=Non
         for key, value in time_of_day_ranges.items():
             if point_in_range(time, value[0], value[1]):
                 return [key]
+        return []
     else:
-        enum_list = []
+        enum_list: list[TimeOfDay] = []
         for key, value in time_of_day_ranges.items():
             if ranges_overlap(time_1, time_2, value[0], value[1]):
                 enum_list.append(key)

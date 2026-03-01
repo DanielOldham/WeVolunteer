@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, date
+from datetime import timedelta
 
 from dateutil.relativedelta import relativedelta
 from django.core.exceptions import BadRequest
@@ -42,22 +42,22 @@ class EventViewsTests(TestCase):
         self.contact = OrganizationContact.objects.create(organization=self.org, name="contact")
 
         # create events for various months
-        today = date.today()
+        today = timezone.now()
         Event.objects.create(
             title="Oct Event",
             organization=self.org,
             primary_contact=self.contact,
-            date=today,
-            start_time=datetime.now().time(),
-            end_time=(datetime.now().replace(hour=16, minute=0).time()),
+            date=today.date(),
+            start_time="10:00",
+            end_time="11:00",
         )
-        future_month = (today.replace(day=1) + relativedelta(days=32)).replace(day=1)
+        future_month = (today + relativedelta(months=1)).replace(day=1)
         Event.objects.create(
             title="Nov Event",
             organization=self.org,
             date=future_month,
-            start_time=datetime.now().time(),
-            end_time=datetime.now().time(),
+            start_time="10:00",
+            end_time="11:00",
         )
 
     def test_get_events_by_month_and_year(self):
@@ -77,7 +77,7 @@ class EventViewsTests(TestCase):
         respond_sse_msg = "respond via sse called"
         mock_respond_via_sse.return_value = respond_sse_msg
 
-        today = timezone.now().date()
+        today = timezone.now()
         req_dict = {"current_month": today.month, "current_year": today.year}
         request = RequestFactory().get("events/get_next_month", {"datastar": json.dumps(req_dict)})
 
@@ -146,7 +146,7 @@ class EventViewsTests(TestCase):
         post_data = {
             "title": "New Event",
             "organization": self.org.id,
-            "date": date.today(),
+            "date": timezone.now().date(),
             "start_time": "10:00AM",
             "end_time": "12:00PM",
         }
@@ -195,7 +195,7 @@ class EventViewsTests(TestCase):
             mock_form = mock_event_form.return_value
             mock_form.is_valid.return_value = True
             mock_form.save.return_value = None
-            with patch("core.views.redirect", return_value="edit redirect") as mock_redirect:
+            with patch("core.views.redirect", return_value="edit redirect") as _:
                 response = event_edit(request, event_id=event.id)
                 self.assertTrue(mock_form.save.called)
                 self.assertEqual(response, "edit redirect")
@@ -230,10 +230,11 @@ class OrganizationViewsTests(TestCase):
 
         # create 2 upcoming events and 4 past events
         today = timezone.now().date()
+        yesterday = today - timedelta(days=1)
         Event.objects.create(title="Upcoming 1", organization=self.org, date=today, start_time="10:00", end_time="11:00")
         Event.objects.create(title="Upcoming 2", organization=self.org, date=today, start_time="12:00", end_time="13:00")
         for i in range(4):
-            Event.objects.create(title=f"Past {i}", organization=self.org, date=today.replace(day=1), start_time="09:00", end_time="10:00")
+            Event.objects.create(title=f"Past {i}", organization=self.org, date=yesterday, start_time="09:00", end_time="10:00")
 
     def test_organizations_view_renders_and_context(self):
         response = Client().get("/organizations/")
@@ -287,7 +288,7 @@ class OrganizationViewsTests(TestCase):
 
     @patch("core.views.render")
     @patch("core.views.respond_via_sse")
-    def test_organization_details_get_next_past_events_as_sse_sends_more_events_false(self, mock_respond_sse, mock_render):
+    def test_organization_details_get_next_past_events_as_sse_sends_more_events_false(self, mock_respond_sse, _):
         mock_respond_sse.return_value = "sse_response"
         past_events_count = 2
         past_events_shown = list(Event.objects.filter(organization=self.org, date__lt=timezone.now().date()).values_list("pk", flat=True))

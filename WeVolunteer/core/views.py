@@ -1,5 +1,6 @@
 import json
-from datetime import datetime
+from datetime import datetime, date
+from typing import Any
 
 from datastar_py.consts import ElementPatchMode
 from dateutil.relativedelta import relativedelta
@@ -15,11 +16,11 @@ from core.forms import EventForm, OrganizationForm, OrganizationContactForm
 from core.models import Event, EventDescriptors, EventLocationDescriptors, Organization, OrganizationContact
 
 
-def get_events_by_month_and_year(month_year: datetime.date):
+def get_events_by_month_and_year(month_year: date):
     """
     Get a queryset of events by the given month and year.
 
-    :param month_year: datetime.date containing the desired month and year, day is ignored
+    :param month_year: datetime containing the desired month and year, day is ignored
     """
 
     return Event.objects.filter(date__month=month_year.month, date__year=month_year.year).order_by('date', 'start_time', 'title')
@@ -40,7 +41,7 @@ def events(request):
     """
 
     monthly_events = {}
-    now = timezone.now().date()
+    now = timezone.now()
     events_date = now
 
     num_months = 3
@@ -73,7 +74,7 @@ def events_get_next_month_events_as_sse(request):
     """
 
     today = timezone.now()
-    signals = {"next_month_events_error": False}
+    signals: dict[str, Any] = {"next_month_events_error": False}
 
     # get current month and year from datastar signals dict
     try:
@@ -118,7 +119,7 @@ def event_details(request, event_id):
 
     event = Event.objects.filter(id=event_id).first()
     if event:
-        context = {"event": event}
+        context: dict[str, Any] = {'event': event}
         if event.primary_contact:
             context["contact_event_count"] = len(Event.objects.filter(primary_contact=event.primary_contact))
         return render(request, "event_details.html", context)
@@ -220,7 +221,7 @@ def organization_details(request, org_id: int):
     if not org:
         raise Http404("Organization does not exist")
 
-    now = timezone.now().date()
+    now = timezone.now()
     org_events = Event.objects.filter(organization=org)
     upcoming_events = org_events.filter(date__gte=now)
 
