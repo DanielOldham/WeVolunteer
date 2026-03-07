@@ -1,5 +1,5 @@
 import json
-from datetime import timedelta
+from datetime import datetime, UTC
 
 from dateutil.relativedelta import relativedelta
 from django.core.exceptions import BadRequest
@@ -21,17 +21,29 @@ from core.views import (
 )
 from datastar_py.consts import ElementPatchMode
 
+MOCKED_NOW = datetime(2026, 1, 15, tzinfo=UTC)
+EVENT_NAME_1 = "Event 1"
+EVENT_NAME_2 = "Event 2"
+
 class MiscViewsTests(TestCase):
     def test_about_view_renders(self):
         response = about(RequestFactory().get("/about/"))
         self.assertEqual(response.status_code, 200)
 
 
+@patch(
+    "django.utils.timezone.now",
+    lambda: MOCKED_NOW,
+)
 class EventViewsTests(TestCase):
     """
     Test class for the Event related core views.
     """
 
+    @patch(
+        "django.utils.timezone.now",
+        lambda: MOCKED_NOW,
+    )
     def setUp(self):
         # create user, organization, and admin links
         self.org = Organization.objects.create(name="Org")
@@ -44,16 +56,16 @@ class EventViewsTests(TestCase):
         # create events for various months
         today = timezone.now()
         Event.objects.create(
-            title="Oct Event",
+            title=EVENT_NAME_1,
             organization=self.org,
             primary_contact=self.contact,
             date=today.date(),
             start_time="10:00",
             end_time="11:00",
         )
-        future_month = (today + relativedelta(months=1)).replace(day=1)
+        future_month = (today + relativedelta(months=1))
         Event.objects.create(
-            title="Nov Event",
+            title=EVENT_NAME_2,
             organization=self.org,
             date=future_month,
             start_time="10:00",
@@ -63,7 +75,7 @@ class EventViewsTests(TestCase):
     def test_get_events_by_month_and_year(self):
         month_year = timezone.now().date()
         qs = get_events_by_month_and_year(month_year)
-        self.assertEqual(list(qs.values_list("title", flat=True)), ["Oct Event"])
+        self.assertEqual(list(qs.values_list("title", flat=True)), [EVENT_NAME_1])
 
     def test_events_view_renders_and_monthly_events(self):
         client = Client()
@@ -230,7 +242,7 @@ class OrganizationViewsTests(TestCase):
 
         # create 2 upcoming events and 4 past events
         today = timezone.now().date()
-        yesterday = today - timedelta(days=1)
+        yesterday = today - relativedelta(days=1)
         Event.objects.create(title="Upcoming 1", organization=self.org, date=today, start_time="10:00", end_time="11:00")
         Event.objects.create(title="Upcoming 2", organization=self.org, date=today, start_time="12:00", end_time="13:00")
         for i in range(4):
