@@ -21,7 +21,7 @@ from core.views import (
 )
 from datastar_py.consts import ElementPatchMode
 
-MOCKED_NOW = datetime(2026, 1, 15, tzinfo=UTC)
+MOCKED_NOW = datetime(2026, 1, 15, hour=9, minute=0, tzinfo=UTC)
 EVENT_NAME_1 = "Event 1"
 EVENT_NAME_2 = "Event 2"
 
@@ -231,10 +231,19 @@ class EventViewsTests(TestCase):
         with self.assertRaises(BadRequest):
             event_delete(request, event_id=event.id)
 
+@patch(
+    "django.utils.timezone.now",
+    lambda: MOCKED_NOW,
+)
 class OrganizationViewsTests(TestCase):
     """
     Test class for the Organization related core views.
     """
+
+    @patch(
+        "django.utils.timezone.now",
+        lambda: MOCKED_NOW,
+    )
     def setUp(self):
         self.org = Organization.objects.create(name="Test Org")
         self.user = User.objects.create_user(username="admin", password="password")
