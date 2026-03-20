@@ -105,18 +105,18 @@
         {% if past_events %}
             <div id="appended-past-events"
                  class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4"
-                 data-signals-past_events_shown="{{ past_events_shown }}"
-                 data-signals-past_events_count="{{ past_events_count }}">
+                 data-signals:past_events_shown="{{ past_events_shown }}"
+                 data-signals:past_events_count="{{ past_events_count }}">
                 {% with past_events as event_list %}
                     {% include "partials/event_list.html#event-list" %}
                 {% endwith %}
             </div>
 
-            <div data-signals-more_events="{% if past_events|length == 0 %}false{% else %}true{% endif %}" id="load-more-events-div" class="row mx-4 my-5">
+            <div data-signals:more_events="{% if past_events|length == 0 %}false{% else %}true{% endif %}" id="load-more-events-div" class="row mx-4 my-5">
                 <span data-show="$more_events" class="text-center">
-                    <button data-on-click="@get('{% url "core:get-next-past-events" org.id %}') && ($past_events_error = false)"
-                            data-indicator-_fetching_events
-                            data-attr-disabled="$_fetching_events"
+                    <button data-on:click="@get('{% url "core:get-next-past-events" org.id %}') && ($past_events_error = false)"
+                            data-indicator:_fetching_events
+                            data-attr:disabled="$_fetching_events"
                             class="btn btn-primary fw-semibold">
 
                         <span data-show="!$_fetching_events">Load More</span>

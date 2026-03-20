@@ -1,6 +1,7 @@
-from datetime import timedelta
+from datetime import datetime, UTC
 from unittest.mock import patch
 
+from dateutil.relativedelta import relativedelta
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -14,6 +15,9 @@ from core.forms import (
 )
 from core.models import Organization, OrganizationContact, OrganizationAdministrator, EventDescriptors, \
     EventLocationDescriptors
+
+
+MOCKED_NOW = datetime(2026, 1, 15, hour=9, minute=0, tzinfo=UTC)
 
 
 class FormHelperTests(TestCase):
@@ -53,6 +57,10 @@ class FirstLastNameSignupFormTests(TestCase):
         self.assertTrue(form.fields["last_name"].required)
 
 
+@patch(
+    "django.utils.timezone.now",
+    lambda: MOCKED_NOW,
+)
 class EventFormTests(TestCase):
     """
     Test class for the EventForm class.
@@ -69,15 +77,19 @@ class EventFormTests(TestCase):
             name="Jane", email="jane@example.com", organization=cls.other_org
         )
 
+    @patch(
+        "django.utils.timezone.now",
+        lambda: MOCKED_NOW,
+    )
     def make_cleaned_data(self):
         now = timezone.now()
         return {
             "title": "Test Event",
             "organization": self.organization,
             "primary_contact": self.contact,
-            "date": now.date() + timedelta(days=2),
+            "date": now.date() + relativedelta(days=2),
             "start_time": now.time(),
-            "end_time": (now + timedelta(hours=1)).time(),
+            "end_time": (now + relativedelta(hours=1)).time(),
             "address": "1234 Address Lane",
             "event_descriptor_tags": [
                 EventDescriptors.CLEANING,
@@ -115,14 +127,14 @@ class EventFormTests(TestCase):
 
     def test_clean_date_past_date_adds_error(self):
         form = EventForm()
-        form.cleaned_data = {"date": timezone.now().date() - timedelta(days=1)}
+        form.cleaned_data = {"date": timezone.now().date() - relativedelta(days=1)}
 
         with self.assertRaises(ValidationError):
             form.clean_date()
 
     def test_clean_date_future_date_no_errors(self):
         form = EventForm()
-        date = timezone.now().date() + timedelta(days=1)
+        date = timezone.now().date() + relativedelta(days=1)
         form.cleaned_data = {"date": date}
         future_date = form.clean_date()
 
@@ -159,7 +171,7 @@ class EventFormTests(TestCase):
         form = EventForm()
         now = timezone.now()
         form.cleaned_data = {
-            "start_time": now + timedelta(hours=1),
+            "start_time": now + relativedelta(hours=1),
             "end_time": now,
         }
 
@@ -174,7 +186,7 @@ class EventFormTests(TestCase):
         now = timezone.now()
         form.cleaned_data = {
             "start_time": now,
-            "end_time": now + timedelta(hours=1),
+            "end_time": now + relativedelta(hours=1),
         }
 
         with patch("core.forms.add_invalid_class_to_form_error_fields") as mock_func:

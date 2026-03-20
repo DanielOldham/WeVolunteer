@@ -21,6 +21,7 @@ from core.views import (
 )
 from datastar_py.consts import ElementPatchMode
 
+
 MOCKED_NOW = datetime(2026, 1, 15, hour=9, minute=0, tzinfo=UTC)
 EVENT_NAME_1 = "Event 1"
 EVENT_NAME_2 = "Event 2"
