@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, date
+from datetime import datetime, UTC
 
 from dateutil.relativedelta import relativedelta
 from django.core.exceptions import BadRequest
@@ -21,17 +21,30 @@ from core.views import (
 )
 from datastar_py.consts import ElementPatchMode
 
+
+MOCKED_NOW = datetime(2026, 1, 15, hour=9, minute=0, tzinfo=UTC)
+EVENT_NAME_1 = "Event 1"
+EVENT_NAME_2 = "Event 2"
+
 class MiscViewsTests(TestCase):
     def test_about_view_renders(self):
         response = about(RequestFactory().get("/about/"))
         self.assertEqual(response.status_code, 200)
 
 
+@patch(
+    "django.utils.timezone.now",
+    lambda: MOCKED_NOW,
+)
 class EventViewsTests(TestCase):
     """
     Test class for the Event related core views.
     """
 
+    @patch(
+        "django.utils.timezone.now",
+        lambda: MOCKED_NOW,
+    )
     def setUp(self):
         # create user, organization, and admin links
         self.org = Organization.objects.create(name="Org")
@@ -42,28 +55,28 @@ class EventViewsTests(TestCase):
         self.contact = OrganizationContact.objects.create(organization=self.org, name="contact")
 
         # create events for various months
-        today = date.today()
+        today = timezone.now()
         Event.objects.create(
-            title="Oct Event",
+            title=EVENT_NAME_1,
             organization=self.org,
             primary_contact=self.contact,
-            date=today,
-            start_time=datetime.now().time(),
-            end_time=(datetime.now().replace(hour=16, minute=0).time()),
+            date=today.date(),
+            start_time="10:00",
+            end_time="11:00",
         )
-        future_month = (today.replace(day=1) + relativedelta(days=32)).replace(day=1)
+        future_month = (today + relativedelta(months=1))
         Event.objects.create(
-            title="Nov Event",
+            title=EVENT_NAME_2,
             organization=self.org,
             date=future_month,
-            start_time=datetime.now().time(),
-            end_time=datetime.now().time(),
+            start_time="10:00",
+            end_time="11:00",
         )
 
     def test_get_events_by_month_and_year(self):
         month_year = timezone.now().date()
         qs = get_events_by_month_and_year(month_year)
-        self.assertEqual(list(qs.values_list("title", flat=True)), ["Oct Event"])
+        self.assertEqual(list(qs.values_list("title", flat=True)), [EVENT_NAME_1])
 
     def test_events_view_renders_and_monthly_events(self):
         client = Client()
@@ -77,7 +90,7 @@ class EventViewsTests(TestCase):
         respond_sse_msg = "respond via sse called"
         mock_respond_via_sse.return_value = respond_sse_msg
 
-        today = timezone.now().date()
+        today = timezone.now()
         req_dict = {"current_month": today.month, "current_year": today.year}
         request = RequestFactory().get("events/get_next_month", {"datastar": json.dumps(req_dict)})
 
@@ -146,7 +159,7 @@ class EventViewsTests(TestCase):
         post_data = {
             "title": "New Event",
             "organization": self.org.id,
-            "date": date.today(),
+            "date": timezone.now().date(),
             "start_time": "10:00AM",
             "end_time": "12:00PM",
         }
@@ -195,7 +208,7 @@ class EventViewsTests(TestCase):
             mock_form = mock_event_form.return_value
             mock_form.is_valid.return_value = True
             mock_form.save.return_value = None
-            with patch("core.views.redirect", return_value="edit redirect") as mock_redirect:
+            with patch("core.views.redirect", return_value="edit redirect") as _:
                 response = event_edit(request, event_id=event.id)
                 self.assertTrue(mock_form.save.called)
                 self.assertEqual(response, "edit redirect")
@@ -219,10 +232,19 @@ class EventViewsTests(TestCase):
         with self.assertRaises(BadRequest):
             event_delete(request, event_id=event.id)
 
+@patch(
+    "django.utils.timezone.now",
+    lambda: MOCKED_NOW,
+)
 class OrganizationViewsTests(TestCase):
     """
     Test class for the Organization related core views.
     """
+
+    @patch(
+        "django.utils.timezone.now",
+        lambda: MOCKED_NOW,
+    )
     def setUp(self):
         self.org = Organization.objects.create(name="Test Org")
         self.user = User.objects.create_user(username="admin", password="password")
@@ -230,10 +252,11 @@ class OrganizationViewsTests(TestCase):
 
         # create 2 upcoming events and 4 past events
         today = timezone.now().date()
+        yesterday = today - relativedelta(days=1)
         Event.objects.create(title="Upcoming 1", organization=self.org, date=today, start_time="10:00", end_time="11:00")
         Event.objects.create(title="Upcoming 2", organization=self.org, date=today, start_time="12:00", end_time="13:00")
         for i in range(4):
-            Event.objects.create(title=f"Past {i}", organization=self.org, date=today.replace(day=1), start_time="09:00", end_time="10:00")
+            Event.objects.create(title=f"Past {i}", organization=self.org, date=yesterday, start_time="09:00", end_time="10:00")
 
     def test_organizations_view_renders_and_context(self):
         response = Client().get("/organizations/")
@@ -287,7 +310,7 @@ class OrganizationViewsTests(TestCase):
 
     @patch("core.views.render")
     @patch("core.views.respond_via_sse")
-    def test_organization_details_get_next_past_events_as_sse_sends_more_events_false(self, mock_respond_sse, mock_render):
+    def test_organization_details_get_next_past_events_as_sse_sends_more_events_false(self, mock_respond_sse, _):
         mock_respond_sse.return_value = "sse_response"
         past_events_count = 2
         past_events_shown = list(Event.objects.filter(organization=self.org, date__lt=timezone.now().date()).values_list("pk", flat=True))

@@ -110,7 +110,7 @@
                                 </div>
                                 {% endif %}
                             </div>
-                            <div data-signals-location_descriptor_tags="{{ form.location_descriptor_tags.value_to_string }}"
+                            <div data-signals:location_descriptor_tags="{{ form.location_descriptor_tags.value_to_string }}"
                                  class="visually-hidden">
                                 {{ form.location_descriptor_tags }}
                                 {{ form.location_descriptor_tags.label_tag }}
@@ -120,7 +120,7 @@
                                     <span data-signals="{ {{ tag }}_selected: $location_descriptor_tags.includes('{{ tag }}')}"
                                       data-class="{'bg-wv-green': ${{ tag }}_selected,
                                                    'bg-body-secondary': !${{ tag }}_selected}"
-                                      data-on-click="${{ tag }}_selected ? ((${{ tag }}_selected = false)
+                                      data-on:click="${{ tag }}_selected ? ((${{ tag }}_selected = false)
                                                      || ($location_descriptor_tags = $location_descriptor_tags.filter(item => item != '{{ tag }}')))
                                                      : (${{ tag }}_selected = true) && ($location_descriptor_tags = [...$location_descriptor_tags, '{{ tag }}'])"
                                       role="button"
@@ -141,7 +141,7 @@
                                 </div>
                                 {% endif %}
                             </div>
-                            <div data-signals-event_descriptor_tags="{{ form.event_descriptor_tags.value_to_string }}"
+                            <div data-signals:event_descriptor_tags="{{ form.event_descriptor_tags.value_to_string }}"
                                  class="visually-hidden">
                                 {{ form.event_descriptor_tags }}
                                 {{ form.event_descriptor_tags.label_tag }}
@@ -153,7 +153,7 @@
                                                    'bg-body-secondary': !${{ tag }}_selected}"
                                       {# if tag is already selected, unselect it and remove it from the event descriptor tags list #}
                                       {# else if the number of selected tags is less than 5, select the tag and add it to the event descriptor tags list #}
-                                      data-on-click="${{ tag }}_selected ? ((${{ tag }}_selected = false)
+                                      data-on:click="${{ tag }}_selected ? ((${{ tag }}_selected = false)
                                                      || ($event_descriptor_tags = $event_descriptor_tags.filter(item => item != '{{ tag }}')))
                                                      : $event_descriptor_tags.length < 5 && ((${{ tag }}_selected = true) && ($event_descriptor_tags = [...$event_descriptor_tags, '{{ tag }}']))"
                                       role="button"

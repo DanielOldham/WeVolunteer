@@ -13,7 +13,7 @@ class EnumTagsTests(SimpleTestCase):
     """
 
     def test_event_descriptor_label_with_valid_value(self):
-        for choice in EventDescriptors.values:
+        for choice in EventDescriptors.values: # type: ignore
             expected_label = EventDescriptors(choice).label
             self.assertEqual(event_descriptor_label(choice), expected_label)
 
@@ -23,7 +23,7 @@ class EnumTagsTests(SimpleTestCase):
         self.assertEqual(event_descriptor_label(invalid_value), invalid_value)
 
     def test_event_location_descriptor_label_with_valid_value(self):
-        for choice in EventLocationDescriptors.values:
+        for choice in EventLocationDescriptors.values: # type: ignore
             expected_label = EventLocationDescriptors(choice).label
             self.assertEqual(event_location_descriptor_label(choice), expected_label)
 
@@ -32,7 +32,7 @@ class EnumTagsTests(SimpleTestCase):
         self.assertEqual(event_location_descriptor_label(invalid_value), invalid_value)
 
     def test_time_of_day_label_with_valid_value(self):
-        for choice in TimeOfDay.values:
+        for choice in TimeOfDay.values: # type: ignore
             expected_label = TimeOfDay(choice).label
             self.assertEqual(time_of_day_label(choice), expected_label)
 

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.postgres',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -48,7 +49,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'django_google_fonts',
-    'template_partials',
     'bootstrap_datepicker_plus',
     'rules.apps.AutodiscoverRulesConfig',
 ]
